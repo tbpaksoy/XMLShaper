@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <GL/glew.h>
+#include <iostream>
 
 #include "Mesh.h"
 
@@ -13,165 +14,81 @@ namespace xmls
         this->vertices = vertices;
         this->indices = indices;
     }
+    Mesh::Mesh(int vertexCount, int vertexSize)
+    {
+        this->vertexCount = vertexCount;
+        this->vertexSize = vertexSize;
+        vertices.resize(vertexCount * vertexSize);
+    }
     Mesh::~Mesh()
     {
     }
 
-    void Mesh::AddVertex(glm::vec3 vertex, int offset)
+    void Mesh::ChangeVertex(glm::vec3 value, int index, int offset)
     {
-        if (offset == -1)
-        {
-            vertices.push_back(vertex.x);
-            vertices.push_back(vertex.y);
-            vertices.push_back(vertex.z);
-        }
-        else
-        {
-            vertices.insert(vertices.begin() + offset, vertex.x);
-            vertices.insert(vertices.begin() + offset + 1, vertex.y);
-            vertices.insert(vertices.begin() + offset + 2, vertex.z);
-        }
+        vertices[index * vertexSize + offset] = value.x;
+        vertices[index * vertexSize + offset + 1] = value.y;
+        vertices[index * vertexSize + offset + 2] = value.z;
     }
-    void Mesh::AddVertex(float x, float y, float z, int offset)
+    void Mesh::ChangeVertex(glm::vec2 value, int index, int offset)
     {
-        if (offset == -1)
-        {
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
-        }
-        else
-        {
-            vertices.insert(vertices.begin() + offset, x);
-            vertices.insert(vertices.begin() + offset + 1, y);
-            vertices.insert(vertices.begin() + offset + 2, z);
-        }
+        vertices[index * vertexSize + offset] = value.x;
+        vertices[index * vertexSize + offset + 1] = value.y;
     }
-    void Mesh::AddVertex(glm::vec2 vertex, int offset)
+    void Mesh::ChangeVertex(float value, int index, int offset)
     {
-        if (offset == -1)
-        {
-            vertices.push_back(vertex.x);
-            vertices.push_back(vertex.y);
-        }
-        else
-        {
-            vertices.insert(vertices.begin() + offset, vertex.x);
-            vertices.insert(vertices.begin() + offset + 1, vertex.y);
-        }
+        vertices[index * vertexSize + offset] = value;
     }
-    void Mesh::AddVertex(float x, float y, int offset)
-    {
-        if (offset == -1)
-        {
-            vertices.push_back(x);
-            vertices.push_back(y);
-        }
-        else
-        {
-            vertices.insert(vertices.begin() + offset, x);
-            vertices.insert(vertices.begin() + offset + 1, y);
-        }
-    }
-    void Mesh::AddVertex(float vertex, int offset)
-    {
-        if (offset == -1)
-        {
-            vertices.push_back(vertex);
-        }
-        else
-        {
-            vertices.insert(vertices.begin() + offset, vertex);
-        }
-    }
-    void Mesh::AddVertices(std::vector<float> vertices, int offset)
-    {
-        if (offset == -1)
-        {
-            this->vertices.insert(this->vertices.end(), vertices.begin(), vertices.end());
-        }
-        else
-        {
-            this->vertices.insert(this->vertices.begin() + offset, vertices.begin(), vertices.end());
-        }
-    }
-    void Mesh::AddIndex(unsigned int index, int offset)
-    {
-        if (offset == -1)
-        {
-            indices.push_back(index);
-        }
-        else
-        {
-            indices.insert(indices.begin() + offset, index);
-        }
-    }
-    void Mesh::AddIndices(std::vector<unsigned int> indices, int offset)
-    {
-        if (offset == -1)
-        {
-            this->indices.insert(this->indices.end(), indices.begin(), indices.end());
-        }
-        else
-        {
-            this->indices.insert(this->indices.begin() + offset, indices.begin(), indices.end());
-        }
-    }
-    void Mesh::SetVertex(int index, glm::vec3 vertex)
-    {
-        if (vertices.size() < index + 3)
-            return;
-        vertices[index] = vertex.x;
-        vertices[index + 1] = vertex.y;
-        vertices[index + 2] = vertex.z;
-    }
-    void Mesh::SetVertex(int index, float x, float y, float z)
-    {
-        if (vertices.size() < index + 3)
-            return;
-        vertices[index] = x;
-        vertices[index + 1] = y;
-        vertices[index + 2] = z;
-    }
-    void Mesh::SetVertex(int index, glm::vec2 vertex)
-    {
-        if (vertices.size() < index + 2)
-            return;
-        vertices[index] = vertex.x;
-        vertices[index + 1] = vertex.y;
-    }
-    void Mesh::SetVertex(int index, float x, float y)
-    {
-        if (vertices.size() < index + 2)
-            return;
-        vertices[index] = x;
-        vertices[index + 1] = y;
-    }
-    void Mesh::SetVertex(int index, float vertex)
-    {
-        if (vertices.size() < index + 1)
-            return;
-        vertices[index] = vertex;
-    }
-    void Mesh::SetVertices(std::vector<float> vertices)
-    {
-        this->vertices = vertices;
-    }
-    void Mesh::SetIndex(int index, unsigned int value)
-    {
-        if (indices.size() < index + 1)
-            return;
-        indices[index] = value;
-    }
-    void Mesh::SetIndices(int index, std::vector<unsigned int> indices)
+    void Mesh::SetIndices(std::vector<unsigned int> indices)
     {
         this->indices = indices;
     }
+    void Mesh::DoTransformations(unsigned int begin, unsigned int offset)
+    {
+        if (offset < 3)
+            return;
+        for (int i = begin; i < vertices.size(); i += offset)
+        {
+            glm::vec3 vertex(vertices[i], vertices[i + 1], vertices[i + 2]);
+            vertex = glm::translate(glm::mat4(1.0f), position) * glm::vec4(vertex, 1.0f);
+            vertex = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::vec4(vertex, 1.0f);
+            vertex = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(vertex, 1.0f);
+            vertex = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) * glm::vec4(vertex, 1.0f);
+            vertex = glm::scale(glm::mat4(1.0f), scale) * glm::vec4(vertex, 1.0f);
+            vertices[i] = vertex.x;
+            vertices[i + 1] = vertex.y;
+            vertices[i + 2] = vertex.z;
+        }
+    }
+    void Mesh::DoTransformations()
+    {
+        DoTransformations(0, vertexCount);
+    }
 
+    int Mesh::GetVertexCount() const
+    {
+        return vertexCount;
+    }
+    int Mesh::GetVertexSize() const
+    {
+        return vertexSize;
+    }
     float *Mesh::GetVertices(int &size)
     {
         size = vertices.size();
-        return &vertices.front();
+        float *data = new float[size];
+        std::copy(vertices.begin(), vertices.end(), data);
+        for (int i = 0; i < vertexCount; i++)
+        {
+            glm::vec3 vertex(data[i * vertexSize], data[i * vertexSize + 1], data[i * vertexSize + 2]);
+            vertex = glm::translate(glm::mat4(1.0f), position) * glm::vec4(vertex, 1.0f);
+            vertex = rotation * vertex;
+            vertex = glm::scale(glm::mat4(1.0f), scale) * glm::vec4(vertex, 1.0f);
+            data[i * vertexSize] = vertex.x;
+            data[i * vertexSize + 1] = vertex.y;
+            data[i * vertexSize + 2] = vertex.z;
+        };
+        return data;
     }
     unsigned int *Mesh::GetIndices(int &size)
     {
@@ -179,78 +96,79 @@ namespace xmls
         return &indices.front();
     }
 
-    Mesh *CreateBox(float width, float height, float depth)
+    Mesh *CreateBox(float width, float height, float depth, int vertexSize)
     {
-        Mesh *mesh = new Mesh();
+        Mesh *mesh = new Mesh(8, vertexSize);
 
-        mesh->AddVertex(-width / 2, -height / 2, -depth / 2);
-        mesh->AddVertex(width / 2, -height / 2, -depth / 2);
-        mesh->AddVertex(width / 2, height / 2, -depth / 2);
-        mesh->AddVertex(-width / 2, height / 2, -depth / 2);
-        mesh->AddVertex(-width / 2, -height / 2, depth / 2);
-        mesh->AddVertex(width / 2, -height / 2, depth / 2);
-        mesh->AddVertex(width / 2, height / 2, depth / 2);
-        mesh->AddVertex(-width / 2, height / 2, depth / 2);
+        float halfWidth = width / 2.0f;
+        float halfHeight = height / 2.0f;
+        float halfDepth = depth / 2.0f;
 
-        mesh->AddIndices({0, 1, 2, 2, 3, 0});
-        mesh->AddIndices({1, 5, 6, 6, 2, 1});
-        mesh->AddIndices({5, 4, 7, 7, 6, 5});
-        mesh->AddIndices({4, 0, 3, 3, 7, 4});
-        mesh->AddIndices({3, 2, 6, 6, 7, 3});
-        mesh->AddIndices({4, 5, 1, 1, 0, 4});
+        mesh->ChangeVertex(glm::vec3(-halfWidth, -halfHeight, -halfDepth), 0, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, -halfHeight, -halfDepth), 1, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, halfHeight, -halfDepth), 2, 0);
+        mesh->ChangeVertex(glm::vec3(-halfWidth, halfHeight, -halfDepth), 3, 0);
+        mesh->ChangeVertex(glm::vec3(-halfWidth, -halfHeight, halfDepth), 4, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, -halfHeight, halfDepth), 5, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, halfHeight, halfDepth), 6, 0);
+        mesh->ChangeVertex(glm::vec3(-halfWidth, halfHeight, halfDepth), 7, 0);
+
+        mesh->SetIndices({0, 1, 2, 2, 3, 0,
+                          1, 5, 6, 6, 2, 1,
+                          5, 4, 7, 7, 6, 5,
+                          4, 0, 3, 3, 7, 4,
+                          3, 2, 6, 6, 7, 3,
+                          4, 5, 1, 1, 0, 4});
 
         return mesh;
     }
-    Mesh *CreatePlane(float width, float height)
+    Mesh *CreatePlane(float width, float height, int vertexSize)
     {
-        Mesh *mesh = new Mesh();
+        Mesh *mesh = new Mesh(4, vertexSize);
 
-        mesh->AddVertex(-width / 2, 0, -height / 2);
-        mesh->AddVertex(width / 2, 0, -height / 2);
-        mesh->AddVertex(width / 2, 0, height / 2);
-        mesh->AddVertex(-width / 2, 0, height / 2);
+        float halfWidth = width / 2.0f;
+        float halfHeight = height / 2.0f;
 
-        mesh->AddIndices({0, 1, 2, 2, 3, 0});
+        mesh->ChangeVertex(glm::vec3(-halfWidth, 0.0f, -halfHeight), 0, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, 0.0f, -halfHeight), 1, 0);
+        mesh->ChangeVertex(glm::vec3(halfWidth, 0.0f, halfHeight), 2, 0);
+        mesh->ChangeVertex(glm::vec3(-halfWidth, 0.0f, halfHeight), 3, 0);
 
         return mesh;
     }
-    Mesh *CreateCylinder(float radius, float height, int sectorCount)
+    Mesh *CreateCylinder(float radius, float height, int sectorCount, int vertexSize)
     {
-        Mesh *mesh = new Mesh();
+        Mesh *mesh = new Mesh(sectorCount * 2, vertexSize);
 
         float sectorStep = 2 * (22.0f / 7.0f) / sectorCount;
-        float sectorAngle;
-        for (int i = 0; i <= sectorCount; i++)
-        {
-            sectorAngle = i * sectorStep;
-            mesh->AddVertex(radius * cos(sectorAngle), -height / 2, radius * sin(sectorAngle));
-            mesh->AddVertex(radius * cos(sectorAngle), height / 2, radius * sin(sectorAngle));
-        }
 
-        for (unsigned int i = 0; i < sectorCount; i++)
+        for (int i = 0; i < sectorCount; i++)
         {
-            mesh->AddIndices({i * 2, i * 2 + 1, i * 2 + 3, i * 2 + 3, i * 2 + 2, i * 2});
+            float sectorAngle = i * sectorStep;
+            float x = radius * cos(sectorAngle);
+            float z = radius * sin(sectorAngle);
+
+            mesh->ChangeVertex(glm::vec3(x, -height / 2.0f, z), i, 0);
+            mesh->ChangeVertex(glm::vec3(x, height / 2.0f, z), i + sectorCount, 0);
         }
 
         return mesh;
     }
-    Mesh *CreateCone(float radius, float height, int sectorCount)
+    Mesh *CreateCone(float radius, float height, int sectorCount, int vertexSize)
     {
-        Mesh *mesh = new Mesh();
+        Mesh *mesh = new Mesh(sectorCount + 1, vertexSize);
 
         float sectorStep = 2 * (22.0f / 7.0f) / sectorCount;
-        float sectorAngle;
-        for (int i = 0; i <= sectorCount; i++)
-        {
-            sectorAngle = i * sectorStep;
-            mesh->AddVertex(radius * cos(sectorAngle), -height / 2, radius * sin(sectorAngle));
-        }
-        mesh->AddVertex(0, height / 2, 0);
 
-        for (unsigned int i = 0; i < sectorCount; i++)
+        for (int i = 0; i < sectorCount; i++)
         {
-            mesh->AddIndices({i, i + 1, (unsigned int)sectorCount});
+            float sectorAngle = i * sectorStep;
+            float x = radius * cos(sectorAngle);
+            float z = radius * sin(sectorAngle);
+
+            mesh->ChangeVertex(glm::vec3(x, -height / 2.0f, z), i, 0);
         }
+        mesh->ChangeVertex(glm::vec3(0.0f, height / 2.0f, 0.0f), sectorCount, 0);
 
         return mesh;
     }

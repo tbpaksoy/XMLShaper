@@ -30,7 +30,8 @@ namespace xmls
     // `rotation` nesneyi döndürmek için kullanılacak kuartyondur.
     void Object::Rotate(glm::quat rotation)
     {
-        this->rotation = glm::normalize(rotation * this->rotation);
+        this->rotation = rotation * this->rotation;
+        this->rotation = glm::normalize(this->rotation);
     }
     // En: Scales the object by the given vector.
     // `scale` is the vector to scale the object.

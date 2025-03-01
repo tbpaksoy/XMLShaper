@@ -1,0 +1,7 @@
+<Scene>
+    <Box width="1" height="1" depth="1">
+        <Rotate x="0.5" />
+        <Normal x="0" y="0" z="1" />
+        <Color r="0.3" g="0.6" b="0.1" offset="3" />
+    </Box>
+</Scene>

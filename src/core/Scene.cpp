@@ -44,12 +44,20 @@ namespace xmls
             }
         }
 
-        if (_vertices)
-            delete[] _vertices;
-        if (_indices)
-            delete[] _indices;
-        _vertices = new float[vertices.size()];
-        _indices = new unsigned int[indices.size()];
+        if (vertices.size() != _vertexSize)
+        {
+            if (!_vertices)
+                delete[] _vertices;
+            _vertices = new float[vertices.size()];
+            _vertexSize = vertices.size();
+        }
+        if (indices.size() != _indexSize)
+        {
+            if (!_indices)
+                delete[] _indices;
+            _indices = new unsigned int[indices.size()];
+            _indexSize = indices.size();
+        }
         std::copy(vertices.begin(), vertices.end(), _vertices);
         std::copy(indices.begin(), indices.end(), _indices);
 

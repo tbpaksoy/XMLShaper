@@ -22,6 +22,7 @@ namespace xmls
 
         float *_vertices = nullptr;
         unsigned int *_indices = nullptr;
+        int _vertexSize = 0, _indexSize = 0;
 
     public:
         Scene();
