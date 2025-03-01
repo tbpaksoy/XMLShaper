@@ -27,6 +27,8 @@ namespace xmls
 
         float left, right, bottom, top, oNear, oFar;
 
+        CameraType type;
+
     public:
         Camera();
         ~Camera();
@@ -34,10 +36,13 @@ namespace xmls
         glm::mat4 GetViewMatrix() const;
         glm::mat4 GetPerspectiveMatrix() const;
         glm::mat4 GetOrthographicMatrix() const;
+        glm::mat4 GetProjectionMatrix() const;
         glm::mat4 GetModelMatrix() const;
         void SetPerspective(float fov, float aspect, float near, float far);
         void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
         void SetUniforms(Shader *shader, const char *model = "model", const char *view = "view", const char *projection = "projection", CameraType type = CameraType::Perspective);
+        void SetType(CameraType type);
+        CameraType GetType() const;
     };
 }
 #endif

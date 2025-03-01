@@ -48,6 +48,18 @@ namespace xmls
     {
         return glm::ortho(left, right, bottom, top, oNear, oFar);
     }
+    // En : Returns the projection matrix.
+    // Tr : Projeksiyon matrisini döndürür.
+    glm::mat4 Camera::GetProjectionMatrix() const
+    {
+        switch (type)
+        {
+        case CameraType::Perspective:
+            return GetPerspectiveMatrix();
+        case CameraType::Orthographic:
+            return GetOrthographicMatrix();
+        }
+    }
     // En : Returns the model matrix.
     // Tr : Model matrisini döndürür.
     glm::mat4 Camera::GetModelMatrix() const
@@ -119,6 +131,18 @@ namespace xmls
             shader->Set(projection, GetOrthographicMatrix());
             break;
         }
+    }
+    // En : Returns the front vector.
+    // Tr : Ön vektörü döndürür.
+    void Camera::SetType(CameraType type)
+    {
+        this->type = type;
+    }
+    // En : Return camera type.
+    // Tr : Kamera tipini döndürür.
+    CameraType Camera::GetType() const
+    {
+        return type;
     }
 #pragma endregion
 }

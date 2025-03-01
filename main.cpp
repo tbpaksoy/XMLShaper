@@ -1,5 +1,6 @@
 #include "src/CoreModule.h"
 #include <iostream>
+#include <filesystem>
 int main()
 {
     xmls::Window window("Hello World", 800, 600, glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
@@ -7,22 +8,27 @@ int main()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    xmls::Camera camera;
-    camera.SetPosition(glm::vec3(0.0f, 1.0f, 3.0f));
-    camera.LookAt(glm::vec3(0.0f, 0.0f, 0.0f));
-
     xmls::Shader shader("shaders/mesh.vs", "shaders/mesh.fs");
-    camera.SetUniforms(&shader);
-    shader.Set("viewPos", camera.GetPosition());
 
-    camera.SetPosition(glm::vec3(0.0f, 2.0f, 3.0f));
+    xmls::Scene *scene = nullptr;
 
-    xmls::Scene *scene = xmls::Parse("data/a.xml");
-    scene->SetShader(&shader);
-    scene->Update();
-    shader.Activate();
     window.SetUpdate([&]()
-                     { scene->Draw(); });
+                     {
+                        ImGui::Begin("Scene");
+                        for(auto &p: std::filesystem::directory_iterator("data"))
+                        {
+                            if(ImGui::Button(p.path().filename().string().c_str()))
+                            {
+                                if(scene) delete scene;
+                                scene = xmls::Parse(p.path().string().c_str());
+                                scene->SetShader(&shader);
+                                scene->Update();
+                                shader.Activate();
+                            }
+                        }
+
+                        ImGui::End(); 
+                        if(scene) scene->Draw(); });
 
     window.Run();
 

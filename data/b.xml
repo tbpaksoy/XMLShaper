@@ -1,0 +1,9 @@
+<Scene>
+    <Cam type="p">
+        <Translate z="4" />
+    </Cam>
+    <Cone r="0.5" h="0.5" resolution="8">
+        <Translate z="1" />
+        <Color r="0.1" g="0.7" b="0.3" />
+    </Cone>
+</Scene>

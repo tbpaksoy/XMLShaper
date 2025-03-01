@@ -1,4 +1,8 @@
 <Scene>
+    <Cam type="p">
+        <Rotate z="0.1" />
+        <Translate z="2" />
+    </Cam>
     <Box width="1" height="1" depth="1">
         <Rotate x="0.5" />
         <Normal x="0" y="0" z="1" />

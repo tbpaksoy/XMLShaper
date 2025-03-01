@@ -18,7 +18,8 @@ namespace xmls
     static std::map<std::string, std::function<void(tinyxml2::XMLElement *, Mesh *)>> meshModifierFuncs =
         {{"color", Color}, {"normal", Normal}};
 
-    static std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs;
+    static std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs =
+        {{"camera", Cam}, {"cam", Cam}};
 
     static std::map<std::string, std::function<void(tinyxml2::XMLElement *, Object *)>> objectModifierFuncs =
         {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
@@ -51,6 +52,22 @@ namespace xmls
 
                     if (objectModifierFuncs.find(objectName) != objectModifierFuncs.end())
                         objectModifierFuncs[objectName](o, mesh);
+                }
+            }
+            if (objectFuncs.find(typeName) != objectFuncs.end())
+            {
+                Object *object = objectFuncs[typeName](e);
+                Camera *camera = dynamic_cast<Camera *>(object);
+                if (camera != nullptr)
+                    scene->SetCamera(camera);
+                for (tinyxml2::XMLElement *o = e->FirstChildElement(); o; o = o->NextSiblingElement())
+                {
+                    std::string objectName(o->Name());
+                    std::transform(objectName.begin(), objectName.end(), objectName.begin(), [](unsigned char c)
+                                   { return tolower(c); });
+
+                    if (objectModifierFuncs.find(objectName) != objectModifierFuncs.end())
+                        objectModifierFuncs[objectName](o, object);
                 }
             }
         }
@@ -104,11 +121,41 @@ namespace xmls
     }
     Mesh *Cylinder(tinyxml2::XMLElement *element)
     {
-        return new Mesh();
+        float radius = 1.0f, height = 1.0f;
+        int sectorCount = 32;
+        if (element->Attribute("r"))
+            radius = element->FloatAttribute("r");
+        else if (element->Attribute("radius"))
+            radius = element->FloatAttribute("radius");
+        if (element->Attribute("h"))
+            height = element->FloatAttribute("h");
+        else if (element->Attribute("height"))
+            height = element->FloatAttribute("height");
+        if (element->Attribute("sectorCount"))
+            sectorCount = element->IntAttribute("sectorCount");
+        else if (element->Attribute("resolution"))
+            sectorCount = element->IntAttribute("resolution");
+
+        return CreateCylinder(radius, height, sectorCount, 9);
     }
     Mesh *Cone(tinyxml2::XMLElement *element)
     {
-        return new Mesh();
+        float radius = 1.0f, height = 1.0f;
+        int sectorCount = 32;
+        if (element->Attribute("r"))
+            radius = element->FloatAttribute("r");
+        else if (element->Attribute("radius"))
+            radius = element->FloatAttribute("radius");
+        if (element->Attribute("h"))
+            height = element->FloatAttribute("h");
+        else if (element->Attribute("height"))
+            height = element->FloatAttribute("height");
+        if (element->Attribute("sectorCount"))
+            sectorCount = element->IntAttribute("sectorCount");
+        else if (element->Attribute("resolution"))
+            sectorCount = element->IntAttribute("resolution");
+
+        return CreateCone(radius, height, sectorCount, 9);
     }
 
     void Color(tinyxml2::XMLElement *element, Mesh *mesh)
@@ -208,6 +255,47 @@ namespace xmls
             z = element->FloatAttribute("z");
 
         object->Scale(glm::vec3(x, y, z));
+    }
+
+    Camera *Cam(tinyxml2::XMLElement *element)
+    {
+        Camera *camera = new Camera();
+
+        const char *type = element->Attribute("type");
+        if (std::strcmp(type, "perspective") == 0 || std::strcmp(type, "p") == 0)
+        {
+            camera->SetType(CameraType::Perspective);
+            float fov = 45.0f, aspect = 1.0f, pNear = 0.1f, pFar = 100.0f;
+            if (element->Attribute("fov"))
+                fov = element->FloatAttribute("fov");
+            if (element->Attribute("aspect"))
+                aspect = element->FloatAttribute("aspect");
+            if (element->Attribute("near"))
+                pNear = element->FloatAttribute("near");
+            if (element->Attribute("far"))
+                pFar = element->FloatAttribute("far");
+            camera->SetPerspective(fov, aspect, pNear, pFar);
+        }
+        else if (std::strcmp(type, "orthographic") == 0 || std::strcmp(type, "o") == 0)
+        {
+            camera->SetType(CameraType::Orthographic);
+            float left = -1.0f, right = 1.0f, bottom = -1.0f, top = 1.0f, oNear = 0.1f, oFar = 100.0f;
+            if (element->Attribute("left"))
+                left = element->FloatAttribute("left");
+            if (element->Attribute("right"))
+                right = element->FloatAttribute("right");
+            if (element->Attribute("bottom"))
+                bottom = element->FloatAttribute("bottom");
+            if (element->Attribute("top"))
+                top = element->FloatAttribute("top");
+            if (element->Attribute("near"))
+                oNear = element->FloatAttribute("near");
+            if (element->Attribute("far"))
+                oFar = element->FloatAttribute("far");
+            camera->SetOrthographic(left, right, bottom, top, oNear, oFar);
+        }
+
+        return camera;
     }
 }
 #endif

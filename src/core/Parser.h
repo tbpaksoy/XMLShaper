@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Object.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 #include <tinyxml2.h>
 #include <string>
@@ -24,5 +25,7 @@ namespace xmls
     void Translate(tinyxml2::XMLElement *element, Object *object);
     void Rotate(tinyxml2::XMLElement *element, Object *object);
     void Scale(tinyxml2::XMLElement *element, Object *object);
+
+    Camera *Cam(tinyxml2::XMLElement *element);
 }
 #endif

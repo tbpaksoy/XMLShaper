@@ -6,6 +6,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Camera.h"
 
 namespace xmls
 {
@@ -15,6 +16,7 @@ namespace xmls
         GLuint vao, vbo, ebo;
         std::vector<Mesh *> meshes;
         Shader *shader;
+        Camera *camera;
 
         std::vector<float> vertices;
         std::vector<unsigned int> indices;
@@ -29,7 +31,11 @@ namespace xmls
         ~Scene();
 
         void SetShader(Shader *shader);
+        Shader *GetShader() const;
+        void SetCamera(Camera *camera);
+        Camera *GetCamera() const;
         void AddMesh(Mesh *mesh);
+        void AddObject(Object *object);
         void Update();
         void Draw();
     };

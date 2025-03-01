@@ -10,5 +10,5 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(Color, 1.0) * (viewPos.z - FragPos.z + viewPos.y - FragPos.y ) / 5;
+    FragColor = vec4(Color, 1.0) * length(viewPos - FragPos);
 }

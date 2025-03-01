@@ -23,10 +23,23 @@ namespace xmls
     {
         this->shader = shader;
     }
+    Shader *Scene::GetShader() const
+    {
+        return shader;
+    }
+    void Scene::SetCamera(Camera *camera)
+    {
+        this->camera = camera;
+    }
+    Camera *Scene::GetCamera() const
+    {
+        return camera;
+    }
     void Scene::AddMesh(Mesh *mesh)
     {
         meshes.push_back(mesh);
     }
+
     void Scene::Update()
     {
         vertices.clear();
@@ -66,6 +79,12 @@ namespace xmls
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), _vertices, GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), _indices, GL_STATIC_DRAW);
+
+        if (shader && camera)
+        {
+            shader->Use();
+            camera->SetUniforms(shader);
+        }
     }
     void Scene::Draw()
     {
