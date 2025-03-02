@@ -48,6 +48,7 @@ namespace xmls
         GLFWwindow *GetWindow() const;
         float GetDeltaTime() const;
         void Run();
+        void SetFullScreen(int monitorIndex);
 
         // En : Render functions
         // Tr : Render fonksiyonları

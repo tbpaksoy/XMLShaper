@@ -1,0 +1,14 @@
+<Scene>
+    <Cam type="p">
+        <Translate y="2" z="5" />
+    </Cam>
+    <Plane w="2" h="2">
+        <Translate z="-2.5" />
+        <Color r="0.3" g="0.7" b="0.7" />
+    </Plane>
+    <Box>
+        <Translate z="-2.5" y="0.5" />
+        <Color r="0.2" g="0.1" b="0.5" />
+    </Box>
+
+</Scene>

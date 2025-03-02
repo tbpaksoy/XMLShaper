@@ -117,7 +117,17 @@ namespace xmls
     }
     Mesh *Plane(tinyxml2::XMLElement *element)
     {
-        return new Mesh();
+        float width = 1.0f, height = 1.0f;
+        if (element->Attribute("w"))
+            width = element->FloatAttribute("w");
+        else if (element->Attribute("width"))
+            width = element->FloatAttribute("width");
+        if (element->Attribute("h"))
+            height = element->FloatAttribute("h");
+        else if (element->Attribute("height"))
+            height = element->FloatAttribute("height");
+
+        return CreatePlane(width, height, 9);
     }
     Mesh *Cylinder(tinyxml2::XMLElement *element)
     {

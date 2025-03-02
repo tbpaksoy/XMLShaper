@@ -50,7 +50,7 @@ namespace xmls
             float *v = mesh->GetVertices(size);
             vertices.insert(vertices.end(), v, v + size);
             unsigned int *i = mesh->GetIndices(size);
-            unsigned int offset = indices.size() ? *std::max_element(indices.begin(), indices.end()) : 0;
+            unsigned int offset = indices.size() ? *std::max_element(indices.begin(), indices.end()) + 1 : 0;
             for (int j = 0; j < size; j++)
             {
                 indices.push_back(i[j] + offset);

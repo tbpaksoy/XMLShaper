@@ -99,6 +99,8 @@ namespace xmls
     // Tr : Pencereyi çalıştırır.
     void Window::Run()
     {
+        glfwSetWindowSizeCallback(window, [](GLFWwindow *window, int width, int height)
+                                  { glViewport(0, 0, width, height); });
 
         style();
 
@@ -127,7 +129,23 @@ namespace xmls
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
     }
-
+    // En : Sets the full screen.
+    // `monitorIndex` : Monitor index.
+    // Tr : Tam ekran yapar.
+    // `monitorIndex` : Monitör indexi.
+    void Window::SetFullScreen(int monitorIndex)
+    {
+        const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        int size;
+        GLFWmonitor **monitors = glfwGetMonitors(&size);
+        if (size && monitorIndex >= size)
+            glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+        else
+            glfwSetWindowMonitor(window, monitors[monitorIndex], 0, 0, mode->width, mode->height, mode->refreshRate);
+        glViewport(0, 0, mode->width, mode->height);
+        glfwSetWindowSize(window, mode->width, mode->height);
+        glfwSetWindowAspectRatio(window, 16, 9);
+    }
     // En : Render functions
     // Tr : Render fonksiyonları
 
