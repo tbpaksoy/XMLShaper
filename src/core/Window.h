@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <functional>
 #include <vector>
-namespace xmls
+namespace parseShape
 {
     class Window
     {
@@ -58,5 +58,10 @@ namespace xmls
         void SetStyle(std::function<void()> style);
         void SetDefaultShaders(std::vector<Shader *> shaders);
     };
+
+    // En:Themes
+    // Tr:Temalar
+
+    void Nuky();
 }
 #endif

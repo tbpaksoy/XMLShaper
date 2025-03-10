@@ -13,5 +13,6 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor =  vec4(Color, 1.0) + (brightness + length(viewPos - FragPos) * -1.0) + vec4(vec3(ambientStrength), 1.0);
+    FragColor =  vec4(Color, 1.0) + (brightness + length(viewPos - FragPos) * -1.0);
+    FragColor *= ambientStrength;
 }

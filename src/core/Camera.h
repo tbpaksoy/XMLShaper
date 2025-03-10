@@ -6,7 +6,7 @@
 
 #include "Object.h"
 #include "Shader.h"
-namespace xmls
+namespace parseShape
 {
     enum class CameraType
     {

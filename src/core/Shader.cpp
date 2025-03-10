@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include <fstream>
 #include <iostream>
-namespace xmls
+namespace parseShape
 {
     static std::map<std::string, GLint> attributesSizes =
         {

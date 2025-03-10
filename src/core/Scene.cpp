@@ -4,7 +4,7 @@
 #include "Scene.h"
 #include <iostream>
 
-namespace xmls
+namespace parseShape
 {
     Scene::Scene()
     {

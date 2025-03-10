@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <map>
-namespace xmls
+namespace parseShape
 {
     class Shader
     {

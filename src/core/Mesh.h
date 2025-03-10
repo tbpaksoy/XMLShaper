@@ -5,7 +5,7 @@
 #include <map>
 #include <glm/glm.hpp>
 
-namespace xmls
+namespace parseShape
 {
     class Mesh : public Object
     {

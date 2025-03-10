@@ -8,7 +8,7 @@
 #include "Shader.h"
 #include "Camera.h"
 
-namespace xmls
+namespace parseShape
 {
     class Scene
     {

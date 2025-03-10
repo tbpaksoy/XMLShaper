@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
-namespace xmls
+namespace parseShape
 {
     // En : Constructor and deconsructor.
     // Tr : Yapıcı ve yıkıcı fonksiyonlar.
@@ -182,6 +182,40 @@ namespace xmls
     void Window::SetDefaultShaders(std::vector<Shader *> shaders)
     {
         defaultShaders = shaders;
+    }
+
+    // En : Themes
+    // Tr : Temalar
+
+    void Nuky()
+    {
+
+        ImGuiStyle *style = &ImGui::GetStyle();
+
+        style->WindowRounding = 8.0f;
+        style->WindowBorderSize = 2.0f;
+        style->PopupRounding = 4.0f;
+        style->FrameBorderSize = 2.0f;
+        style->FrameRounding = 4.0f;
+
+        ImVec4 *colors = style->Colors;
+
+        colors[ImGuiCol_Text] = ImVec4(1.0f, 0.972f, 0.941f, 1.0f);
+        colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);
+        colors[ImGuiCol_WindowBg] = ImVec4(0.109f, 0.137f, 0.129f, 1.0f);
+        colors[ImGuiCol_ChildBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.0f);
+        colors[ImGuiCol_PopupBg] = ImVec4(0.105f, 0.105f, 0.105f, 1.0f);
+        colors[ImGuiCol_Border] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
+        colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+        colors[ImGuiCol_FrameBg] = ImVec4(0.109f, 0.137f, 0.129f, 0.5f);
+        colors[ImGuiCol_FrameBgHovered] = ImVec4(0.282f, 0.831f, 0.184f, 0.8f);
+        colors[ImGuiCol_FrameBgActive] = colors[ImGuiCol_FrameBgHovered];
+        colors[ImGuiCol_TitleBg] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
+        colors[ImGuiCol_TitleBgActive] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
+        colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
+        colors[ImGuiCol_Button] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
+        colors[ImGuiCol_ButtonHovered] = ImVec4(0.282f, 0.831f, 0.184f, 0.8f);
+        colors[ImGuiCol_ButtonActive] = ImVec4(0.282f, 0.831f, 0.184f, 1.0f);
     }
 }
 #endif

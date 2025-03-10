@@ -7,7 +7,7 @@
 
 #include "Mesh.h"
 
-namespace xmls
+namespace parseShape
 {
     Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices)
     {
