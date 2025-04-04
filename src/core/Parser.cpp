@@ -51,17 +51,6 @@ namespace parseShape
     }
     namespace json
     {
-        static std::map<std::string, std::function<Mesh *(simdjson::dom::element *)>> meshFuncs =
-            {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
-
-        static std::map<std::string, std::function<void(simdjson::dom::element *, Mesh *)>> meshModifierFuncs =
-            {{"color", Color}, {"normal", Normal}};
-
-        static std::map<std::string, std::function<Object *(simdjson::dom::element *)>> objectFuncs =
-            {{"camera", Cam}, {"cam", Cam}};
-
-        static std::map<std::string, std::function<void(simdjson::dom::element *, Object *)>> objectModifierFuncs =
-            {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
 
         Scene *Parse(simdjson::dom::document *document)
         {
@@ -384,17 +373,6 @@ namespace parseShape
     }
     namespace xml
     {
-        static std::map<std::string, std::function<Mesh *(tinyxml2::XMLElement *)>> meshFuncs =
-            {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
-
-        static std::map<std::string, std::function<void(tinyxml2::XMLElement *, Mesh *)>> meshModifierFuncs =
-            {{"color", Color}, {"normal", Normal}};
-
-        static std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs =
-            {{"camera", Cam}, {"cam", Cam}};
-
-        static std::map<std::string, std::function<void(tinyxml2::XMLElement *, Object *)>> objectModifierFuncs =
-            {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
 
         Scene *Parse(tinyxml2::XMLDocument *document)
         {

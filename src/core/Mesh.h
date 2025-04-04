@@ -19,6 +19,11 @@ namespace parseShape
         Mesh(int vertexCount, int vertexSize);
         ~Mesh();
 
+        void AddVertex(std::vector<float> vertex);
+        void AddVertex(float *vertex, int size);
+        void AddIndices(std::vector<unsigned int> indices);
+        void AddIndices(unsigned int *indices, int size);
+        void AddIndices(unsigned int a, unsigned int b, unsigned int c);
         void ChangeVertex(glm::vec3 value, int index, int offset);
         void ChangeVertex(glm::vec2 value, int index, int offset);
         void ChangeVertex(float value, int index, int offset);

@@ -9,6 +9,7 @@
 #include "imgui/imgui_impl_opengl3.h"
 namespace parseShape
 {
+
     // En : Constructor and deconsructor.
     // Tr : Yapıcı ve yıkıcı fonksiyonlar.
 
@@ -123,6 +124,20 @@ namespace parseShape
             glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+            lastWidth = width;
+            lastHeight = height;
+
+            int w, h;
+            glfwGetWindowSize(window, &w, &h);
+            width = w;
+            height = h;
+
+            if (lastWidth != width || lastHeight != height)
+            {
+                glViewport(0, 0, width, height);
+                onWindowResize(width, height);
+            }
+
             glfwPollEvents();
             glfwSwapBuffers(window);
 
@@ -149,6 +164,48 @@ namespace parseShape
     // En : Render functions
     // Tr : Render fonksiyonları
 
+    // En : Sets the background color.
+    // `color` : Background color.
+    // Tr : Arkaplan rengini ayarlar.
+    // `color` : Arkaplan rengi.
+    void Window::SetBackgroundColor(glm::vec4 color)
+    {
+        backgroundColor = color;
+    }
+    // En : Sets the background color.
+    // `color` : Background color.
+    // Tr : Arkaplan rengini ayarlar.
+    // `color` : Arkaplan rengi.
+    void Window::SetBackgroundColor(glm::vec3 color)
+    {
+        backgroundColor = glm::vec4(color, 1.0f);
+    }
+    // En : Sets the background color.
+    // `r` : Red.
+    // `g` : Green.
+    // `b` : Blue.
+    // `a` : Alpha.
+    // Tr : Arkaplan rengini ayarlar.
+    // `r` : Kırmızı.
+    // `g` : Yeşil.
+    // `b` : Mavi.
+    // `a` : Alfa.
+    void Window::SetBackgroundColor(float r, float g, float b, float a)
+    {
+        backgroundColor = glm::vec4(r, g, b, a);
+    }
+    // En : Sets the background color.
+    // `r` : Red.
+    // `g` : Green.
+    // `b` : Blue.
+    // Tr : Arkaplan rengini ayarlar.
+    // `r` : Kırmızı.
+    // `g` : Yeşil.
+    // `b` : Mavi.
+    void Window::SetBackgroundColor(float r, float g, float b)
+    {
+        backgroundColor = glm::vec4(r, g, b, 1.0f);
+    }
     // En : Sets the update function.
     //  `update` : Update function.
     //  Tr : Güncelleme fonksiyonunu ayarlar.
@@ -182,6 +239,15 @@ namespace parseShape
     void Window::SetDefaultShaders(std::vector<Shader *> shaders)
     {
         defaultShaders = shaders;
+    }
+    // En : Sets window resize function.
+    // `onWindowResize` : Window resize function.
+    // Tr : Pencere boyutunu değiştirme fonksiyonunu ayarlar.
+    // `onWindowResize` : Pencere boyutunu değiştirme fonksiyonu.
+    void Window::SetOnWindowResize(std::function<void(int, int)> onWindowResize)
+    {
+        if (onWindowResize)
+            this->onWindowResize = onWindowResize;
     }
 
     // En : Themes

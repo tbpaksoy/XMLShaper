@@ -24,21 +24,101 @@ namespace parseShape
     {
     }
 
+    // En: Adds a vertex to the mesh.
+    // `vertex` is a vector of floats.
+    // Tr: Mesh'e bir vertex ekler.
+    // `vertex`, float'ların vektörüdür.
+    void Mesh::AddVertex(std::vector<float> vertex)
+    {
+        int sizeDiffrence = vertex.size() % vertexSize;
+        vertices.insert(vertices.end(), vertex.begin(), vertex.end() - sizeDiffrence);
+        vertexCount = vertices.size() / vertexSize;
+    }
+    // En: Adds a vertex to the mesh.
+    // `vertex` is an array of floats.
+    // `size` is the size of the array.
+    // Tr: Mesh'e bir vertex ekler.
+    // `vertex`, float'ların dizisidir.
+    // `size`, dizinin boyutudur.
+    void Mesh::AddVertex(float *vertex, int size)
+    {
+        int sizeDiffrence = size % vertexSize;
+        vertices.insert(vertices.end(), vertex, vertex + size - sizeDiffrence);
+        vertexCount = vertices.size() / vertexSize;
+    }
+    // En: Adds indices to the mesh.
+    // `indices` is a vector of unsigned integers.
+    // Tr: Mesh'e indisler ekler.
+    // `indices`, unsigned int'lerin vektörüdür.
+    void Mesh::AddIndices(std::vector<unsigned int> indices)
+    {
+        if (indices.size() % 3 == 0)
+            this->indices.insert(this->indices.end(), indices.begin(), indices.end());
+    }
+    // En: Adds indices to the mesh.
+    // `indices` is an array of unsigned integers.
+    // `size` is the size of the array.
+    // Tr: Mesh'e indisler ekler.
+    // `indices`, unsigned int'lerin dizisidir.
+    // `size`, dizinin boyutudur.
+    void Mesh::AddIndices(unsigned int *indices, int size)
+    {
+        if (size % 3 == 0)
+            this->indices.insert(this->indices.end(), indices, indices + size);
+    }
+    // En: Adds indices to the mesh.
+    // `a`, `b`, and `c` are unsigned integers.
+    // Tr: Mesh'e indisler ekler.
+    // `a`, `b` ve `c` unsigned int'tir.
+    void Mesh::AddIndices(unsigned int a, unsigned int b, unsigned int c)
+    {
+        indices.push_back(a);
+        indices.push_back(b);
+        indices.push_back(c);
+    }
+    // En: Changes the vertex at the specified index and offset with the given value.
+    // `value` is a glm::vec3 for 3D vertices.
+    // `index` is the index of the vertex.
+    // `offset` is the offset of the vertex.
+    // Tr: Belirtilen indexteki ve offsetteki vertexi verilen değerle değiştirir.
+    // `value`, 3D vertexler için glm::vec3'tür.
+    // `index`, vertexin indeksi.
+    // `offset`, vertexin offseti.
     void Mesh::ChangeVertex(glm::vec3 value, int index, int offset)
     {
         vertices[index * vertexSize + offset] = value.x;
         vertices[index * vertexSize + offset + 1] = value.y;
         vertices[index * vertexSize + offset + 2] = value.z;
     }
+    // En: Changes the vertex at the specified index and offset with the given value.
+    // `value` is a glm::vec2 for 2D vertices.
+    // `index` is the index of the vertex.
+    // `offset` is the offset of the vertex.
+    // Tr: Belirtilen indexteki ve offsetteki vertexi verilen değerle değiştirir.
+    // `value`, 2D vertexler için glm::vec2'dir.
+    // `index`, vertexin indeksi.
+    // `offset`, vertexin offseti.
     void Mesh::ChangeVertex(glm::vec2 value, int index, int offset)
     {
         vertices[index * vertexSize + offset] = value.x;
         vertices[index * vertexSize + offset + 1] = value.y;
     }
+    // En: Changes the vertex at the specified index and offset with the given value.
+    // `value` is a float for 1D vertices.
+    // `index` is the index of the vertex.
+    // `offset` is the offset of the vertex.
+    // Tr: Belirtilen indexteki ve offsetteki vertexi verilen değerle değiştirir.
+    // `value`, 1D vertexler için float'tur.
+    // `index`, vertexin indeksi.
+    // `offset`, vertexin offseti.
     void Mesh::ChangeVertex(float value, int index, int offset)
     {
         vertices[index * vertexSize + offset] = value;
     }
+    // En: Sets the indices of the triangles of the mesh.
+    // `indices` is a vector of unsigned integers.
+    // Tr: Meshin üçgenlerinin indislerini ayarlar.
+    // `indices`, unsigned int'lerin vektörüdür.
     void Mesh::SetIndices(std::vector<unsigned int> indices)
     {
         this->indices = indices;
@@ -65,14 +145,22 @@ namespace parseShape
         DoTransformations(0, vertexCount);
     }
 
+    // En: Returns the number of vertices in the mesh.
+    // Tr: Meshin içindeki vertex sayısını döndürür.
     int Mesh::GetVertexCount() const
     {
         return vertexCount;
     }
+    // En: Returns the size of the vertices in the mesh.
+    // Tr: Meshin içindeki vertexlerin boyutunu döndürür.
     int Mesh::GetVertexSize() const
     {
         return vertexSize;
     }
+    // En: Returns the vertices of the mesh.
+    // `size` is the size of the vertices.
+    // Tr: Meshin vertexlerini döndürür.
+    // `size`, vertexlerin boyutudur.
     float *Mesh::GetVertices(int &size)
     {
         size = vertices.size();
@@ -90,6 +178,10 @@ namespace parseShape
         };
         return data;
     }
+    // En: Returns the indices of the mesh.
+    // `size` is the size of the indices.
+    // Tr: Meshin indislerini döndürür.
+    // `size`, indislerin boyutudur.
     unsigned int *Mesh::GetIndices(int &size)
     {
         size = indices.size();

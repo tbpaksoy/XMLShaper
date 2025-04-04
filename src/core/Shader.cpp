@@ -116,6 +116,8 @@ namespace parseShape
         glDeleteProgram(program);
     }
 
+    // En: Activates the shader
+    // Tr: Shader'ı aktif hale getirir
     void Shader::Activate()
     {
         glUseProgram(program);

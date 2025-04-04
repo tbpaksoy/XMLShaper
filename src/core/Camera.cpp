@@ -132,8 +132,102 @@ namespace parseShape
             break;
         }
     }
-    // En : Returns the front vector.
-    // Tr : Ön vektörü döndürür.
+    // En : Sets the field of view.
+    // `fov` : Field of view.
+    // Tr : Görüş alanını ayarlar.
+    // `fov` : Görüş alanı.
+    void Camera::SetFOV(float fov)
+    {
+        this->fov = fov;
+    }
+    // En : Sets the near plane.
+    // `near` : Near plane, the closest point to the camera.
+    // Tr : Yakın düzlemi ayarlar.
+    // `near` : Yakın düzlem, kameraya en yakın nokta.
+    void Camera::SetNearPlane(float near)
+    {
+        pNear = near;
+    }
+    // En : Sets the far plane.
+    // `far` : Far plane, the farthest point to the camera.
+    // Tr : Uzak düzlemi ayarlar.
+    // `far` : Uzak düzlem, kameraya en uzak nokta.
+    void Camera::SetFarPlane(float far)
+    {
+        pFar = far;
+    }
+    // En : Sets the near and far planes.
+    // `near` : Near plane, the closest point to the camera.
+    // `far` : Far plane, the farthest point to the camera.
+    // Tr : Yakın ve uzak düzlemleri ayarlar.
+    // `near` : Yakın düzlem, kameraya en yakın nokta.
+    // `far` : Uzak düzlem, kameraya en uzak nokta.
+    void Camera::SetPlanes(float near, float far)
+    {
+        pNear = near;
+        pFar = far;
+    }
+    // En : Sets the aspect ratio.
+    // `aspect` : Aspect ratio.
+    // Tr : Ekran oranını ayarlar.
+    // `aspect` : Ekran oranı.
+    void Camera::SetAspect(float aspect)
+    {
+        this->aspect = aspect;
+    }
+    // En : Sets the left plane.
+    // `left` : Left plane.
+    // Tr : Sol düzlemi ayarlar.
+    // `left` : Sol düzlem.
+    void Camera::SetLeft(float left)
+    {
+        this->left = left;
+    }
+    // En : Sets the right plane.
+    // `right` : Right plane.
+    // Tr : Sağ düzlemi ayarlar.
+    // `right` : Sağ düzlem.
+    void Camera::SetRight(float right)
+    {
+        this->right = right;
+    }
+    // En : Sets the bottom plane.
+    // `bottom` : Bottom plane.
+    // Tr : Alt düzlemi ayarlar.
+    // `bottom` : Alt düzlem.
+    void Camera::SetBottom(float bottom)
+    {
+        this->bottom = bottom;
+    }
+    // En : Sets the top plane.
+    // `top` : Top plane.
+    // Tr : Üst düzlemi ayarlar.
+    // `top` : Üst düzlem.
+    void Camera::SetTop(float top)
+    {
+        this->top = top;
+    }
+    // En : Sets the near plane.
+    // `near` : Near plane, the closest point to the camera.
+    // Tr : Yakın düzlemi ayarlar.
+    // `near` : Yakın düzlem, kameraya en yakın nokta.
+    void Camera::SetNear(float near)
+    {
+        oNear = near;
+    }
+    // En : Sets the far plane.
+    // `far` : Far plane, the farthest point to the camera.
+    // Tr : Uzak düzlemi ayarlar.
+    // `far` : Uzak düzlem, kameraya en uzak nokta.
+    void Camera::SetFar(float far)
+    {
+        oFar = far;
+    }
+    // En : Returns the camera type.
+    // `type` : Camera type.
+    // Tr : Kamera tipini döndürür.
+    // `type` : Kamera tipi.
+    // Tr : Kamera tipini döndürür.
     void Camera::SetType(CameraType type)
     {
         this->type = type;

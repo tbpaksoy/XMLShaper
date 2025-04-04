@@ -15,10 +15,11 @@ namespace parseShape
         // Tr : Pencere özellikleri
 
         GLFWwindow *window;
-        unsigned int width, height;
+        unsigned int width, height, lastWidth, lastHeight;
         const char *title;
         std::function<void()> update = []() {};
         std::function<void()> start = []() {};
+        std::function<void(int, int)> onWindowResize = [](int, int) {};
         float deltaTime = 0.0f;
         glm::vec4 backgroundColor = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
@@ -53,10 +54,16 @@ namespace parseShape
         // En : Render functions
         // Tr : Render fonksiyonları
 
+        void SetBackgroundColor(glm::vec4 color);
+        void SetBackgroundColor(glm::vec3 color);
+        void SetBackgroundColor(float r, float g, float b, float a);
+        void SetBackgroundColor(float r, float g, float b);
         void SetUpdate(std::function<void()> update);
         void SetStart(std::function<void()> start);
         void SetStyle(std::function<void()> style);
         void SetDefaultShaders(std::vector<Shader *> shaders);
+
+        void SetOnWindowResize(std::function<void(int, int)> onWindowResize);
     };
 
     // En:Themes

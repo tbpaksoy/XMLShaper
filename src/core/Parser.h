@@ -30,9 +30,22 @@ namespace parseShape
         void Scale(tinyxml2::XMLElement *element, Object *object);
 
         Camera *Cam(tinyxml2::XMLElement *element);
+
+        inline std::map<std::string, std::function<Mesh *(tinyxml2::XMLElement *)>> meshFuncs =
+            {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
+
+        inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Mesh *)>> meshModifierFuncs =
+            {{"color", Color}, {"normal", Normal}};
+
+        inline std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs =
+            {{"camera", Cam}, {"cam", Cam}};
+
+        inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Object *)>> objectModifierFuncs =
+            {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
     }
     namespace json
     {
+
         Scene *Parse(simdjson::dom::document *document);
         Scene *Parse(simdjson::dom::element *element);
 
@@ -49,6 +62,18 @@ namespace parseShape
         void Scale(simdjson::dom::element *element, Object *realObject);
 
         Camera *Cam(simdjson::dom::element *element);
+
+        inline std::map<std::string, std::function<Mesh *(simdjson::dom::element *)>> meshFuncs =
+            {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
+
+        inline std::map<std::string, std::function<void(simdjson::dom::element *, Mesh *)>> meshModifierFuncs =
+            {{"color", Color}, {"normal", Normal}};
+
+        inline std::map<std::string, std::function<Object *(simdjson::dom::element *)>> objectFuncs =
+            {{"camera", Cam}, {"cam", Cam}};
+
+        inline std::map<std::string, std::function<void(simdjson::dom::element *, Object *)>> objectModifierFuncs =
+            {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
     }
 
 }

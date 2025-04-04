@@ -41,6 +41,17 @@ namespace parseShape
         void SetPerspective(float fov, float aspect, float near, float far);
         void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
         void SetUniforms(Shader *shader, const char *model = "model", const char *view = "view", const char *projection = "projection", CameraType type = CameraType::Perspective);
+        void SetFOV(float fov);
+        void SetNearPlane(float near);
+        void SetFarPlane(float far);
+        void SetPlanes(float near, float far);
+        void SetAspect(float aspect);
+        void SetLeft(float left);
+        void SetRight(float right);
+        void SetBottom(float bottom);
+        void SetTop(float top);
+        void SetNear(float near);
+        void SetFar(float far);
         void SetType(CameraType type);
         CameraType GetType() const;
     };
