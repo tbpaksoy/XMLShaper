@@ -8,7 +8,6 @@ uniform vec3 viewPos;
 uniform float brightness;
 uniform float ambientStrength;
 
-
 out vec4 FragColor;
 
 void main()

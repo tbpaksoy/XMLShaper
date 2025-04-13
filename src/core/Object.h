@@ -5,14 +5,17 @@
 
 namespace parseShape
 {
+    // En : This class is used to represent a 3D object in the scene.
+    // Tr : Bu sınıf, sahnedeki 3D nesneleri temsil etmek için kullanılır.
     class Object
     {
     protected:
         glm::vec3 position = glm::vec3(), scale = glm::vec3(1.0f), up = glm::vec3(0, 1, 0);
-        glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        glm::quat rotation = glm::quat(1, 0, 0, 0);
 
     public:
-        Object(glm::vec3 position = glm::vec3(), glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f), glm::vec3 scale = glm::vec3(1), glm::vec3 up = glm::vec3(0, 1, 0));
+        Object() = default;
+        Object(glm::vec3 position, glm::quat rotation, glm::vec3 scale, glm::vec3 up);
         ~Object();
 
         // En : Tranform functions

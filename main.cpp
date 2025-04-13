@@ -8,8 +8,6 @@ int main()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    parseShape::Shader shader("shaders/mesh.vs", "shaders/mesh.fs");
-
     int current;
     const char *file = nullptr;
     std::vector<const char *> files;
@@ -21,6 +19,7 @@ int main()
     }
     float brightness = 0.0f, ambientStrength = 0.0f;
     parseShape::Scene *scene = nullptr;
+    parseShape::Shader *shader = nullptr;
     window.SetStyle([]()
                     { parseShape::Nuky(); });
     bool playAnimation[5] = {false, false, false, false, false};
@@ -54,9 +53,10 @@ int main()
                 delete scene;
             scene = parseShape::Parse(file);
             if(scene){
-            scene->SetShader(&shader);
             scene->Update();
-            shader.Activate();
+            scene->UpdateCamera();
+            shader = scene->GetShader();
+            shader->Activate();
             }
         }
 
@@ -66,12 +66,12 @@ int main()
         }
         playAnimation[1] = file && !ImGui::IsItemHovered() && !ImGui::IsItemFocused();
 
-
+        if(shader){
         if(ImGui::SliderFloat("Brightness", &brightness, 0.0f, 3.0f))
-            shader.Set("brightness", brightness);
+            shader->Set("brightness", brightness);
         if(ImGui::SliderFloat("Ambient", &ambientStrength, 0.0f, 1.0f))
-            shader.Set("ambientStrength", ambientStrength);
-
+            shader->Set("ambientStrength", ambientStrength);
+        }
 
 
         ImGui::End();

@@ -1,6 +1,13 @@
 {
     "scene": [
         {
+            "class": "shader",
+            "props": {
+                "vertex": "shaders\\mesh.vs",
+                "fragment": "shaders\\mesh.fs"
+            }
+        },
+        {
             "class": "cam",
             "props": {
                 "type": "p"

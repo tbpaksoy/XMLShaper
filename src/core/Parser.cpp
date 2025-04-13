@@ -120,6 +120,23 @@ namespace parseShape
                         }
                     }
                 }
+                else if (otherFuncs.find(className) != otherFuncs.end())
+                {
+                    OtherType ot = otherFuncs[className](props);
+                    if (std::holds_alternative<Shader *>(ot))
+                    {
+                        Shader *shader = std::get<Shader *>(ot);
+                        scene->SetShader(shader);
+                        for (auto modifier : field.get_object())
+                        {
+                            if (shaderModifierFuncs.find(std::string(modifier.key)) != shaderModifierFuncs.end())
+                            {
+                                std::string_view modfierClassName = modifier.key;
+                                shaderModifierFuncs[std::string(modfierClassName)](&(modifier.value), shader);
+                            }
+                        }
+                    }
+                }
             }
             return scene;
         }
@@ -329,7 +346,7 @@ namespace parseShape
             realObject->Scale(glm::vec3(x, y, z));
         }
 
-        Camera *Cam(simdjson::dom::element *element)
+        Camera *_Camera(simdjson::dom::element *element)
         {
             Camera *camera = new Camera();
             if (element->at_key("type").error() == simdjson::SUCCESS)
@@ -369,6 +386,27 @@ namespace parseShape
                 }
             }
             return camera;
+        }
+
+        Shader *_Shader(simdjson::dom::element *element)
+        {
+            Shader *shader = nullptr;
+            const char *vertexPath = element->at_key("vertex").get_c_str();
+            if (!vertexPath)
+                vertexPath = element->at_key("vertexPath").get_c_str();
+            const char *fragmentPath = element->at_key("fragment").get_c_str();
+            if (!fragmentPath)
+                fragmentPath = element->at_key("fragmentPath").get_c_str();
+            if (vertexPath && fragmentPath)
+                shader = new Shader(vertexPath, fragmentPath);
+            return shader;
+        }
+
+        void Set(simdjson::dom::element *element, Shader *shader)
+        {
+            const char *name = element->at_key("name").get_c_str(), *value = element->at_key("value").get_c_str();
+            if (!shader || !name || !value)
+                return;
         }
     }
     namespace xml
@@ -418,6 +456,24 @@ namespace parseShape
 
                         if (objectModifierFuncs.find(objectName) != objectModifierFuncs.end())
                             objectModifierFuncs[objectName](o, object);
+                    }
+                }
+                if (otherFuncs.find(typeName) != otherFuncs.end())
+                {
+                    OtherType ot = otherFuncs[typeName](e);
+                    if (std::holds_alternative<Shader *>(ot))
+                    {
+                        Shader *shader = std::get<Shader *>(ot);
+                        scene->SetShader(shader);
+                        for (tinyxml2::XMLElement *o = e->FirstChildElement(); o; o = o->NextSiblingElement())
+                        {
+                            std::string objectName(o->Name());
+                            std::transform(objectName.begin(), objectName.end(), objectName.begin(), [](unsigned char c)
+                                           { return tolower(c); });
+
+                            if (objectModifierFuncs.find(objectName) != objectModifierFuncs.end())
+                                shaderModifierFuncs[objectName](o, shader);
+                        }
                     }
                 }
             }
@@ -610,7 +666,7 @@ namespace parseShape
             object->Scale(glm::vec3(x, y, z));
         }
 
-        Camera *Cam(tinyxml2::XMLElement *element)
+        Camera *_Camera(tinyxml2::XMLElement *element)
         {
             Camera *camera = new Camera();
 
@@ -649,6 +705,23 @@ namespace parseShape
             }
 
             return camera;
+        }
+
+        Shader *_Shader(tinyxml2::XMLElement *element)
+        {
+            Shader *shader = nullptr;
+            const char *vertexPath = element->Attribute("vertex");
+            const char *fragmentPath = element->Attribute("fragment");
+            if (vertexPath && fragmentPath)
+                shader = new Shader(vertexPath, fragmentPath);
+            return shader;
+        }
+
+        void Set(tinyxml2::XMLElement *element, Shader *shader)
+        {
+            const char *name = element->Attribute("name"), *value = element->Attribute("value");
+            if (!shader || !name || !value)
+                return;
         }
     }
 }

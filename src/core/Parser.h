@@ -5,13 +5,20 @@
 #include "Object.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Shader.h"
+#include "Vertex.h"
 
 #include <tinyxml2.h>
 #include <simdjson.h>
 #include <string>
+#include <variant>
+#include <map>
+#include <functional>
+
 namespace parseShape
 {
     Scene *Parse(std::string path);
+    typedef std::variant<Shader *, Scene *, Vertex> OtherType;
     namespace xml
     {
         Scene *Parse(tinyxml2::XMLDocument *document);
@@ -29,7 +36,11 @@ namespace parseShape
         void Rotate(tinyxml2::XMLElement *element, Object *object);
         void Scale(tinyxml2::XMLElement *element, Object *object);
 
-        Camera *Cam(tinyxml2::XMLElement *element);
+        Camera *_Camera(tinyxml2::XMLElement *element);
+
+        Shader *_Shader(tinyxml2::XMLElement *element);
+
+        void Set(tinyxml2::XMLElement *element, Shader *shader);
 
         inline std::map<std::string, std::function<Mesh *(tinyxml2::XMLElement *)>> meshFuncs =
             {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
@@ -38,10 +49,16 @@ namespace parseShape
             {{"color", Color}, {"normal", Normal}};
 
         inline std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs =
-            {{"camera", Cam}, {"cam", Cam}};
+            {{"camera", _Camera}, {"cam", _Camera}};
 
         inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Object *)>> objectModifierFuncs =
             {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
+
+        inline std::map<std::string, std::function<OtherType(tinyxml2::XMLElement *)>> otherFuncs =
+            {{"shader", _Shader}};
+
+        inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Shader *)>> shaderModifierFuncs =
+            {{"set", Set}, {"setshader", Set}, {"setuniform", Set}};
     }
     namespace json
     {
@@ -61,7 +78,11 @@ namespace parseShape
         void Rotate(simdjson::dom::element *element, Object *realObject);
         void Scale(simdjson::dom::element *element, Object *realObject);
 
-        Camera *Cam(simdjson::dom::element *element);
+        Camera *_Camera(simdjson::dom::element *element);
+
+        Shader *_Shader(simdjson::dom::element *element);
+
+        void Set(simdjson::dom::element *element, Shader *shader);
 
         inline std::map<std::string, std::function<Mesh *(simdjson::dom::element *)>> meshFuncs =
             {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
@@ -70,11 +91,16 @@ namespace parseShape
             {{"color", Color}, {"normal", Normal}};
 
         inline std::map<std::string, std::function<Object *(simdjson::dom::element *)>> objectFuncs =
-            {{"camera", Cam}, {"cam", Cam}};
+            {{"camera", _Camera}, {"cam", _Camera}};
 
         inline std::map<std::string, std::function<void(simdjson::dom::element *, Object *)>> objectModifierFuncs =
             {{"translate", Translate}, {"rotate", Rotate}, {"scale", Scale}};
-    }
 
+        inline std::map<std::string, std::function<OtherType(simdjson::dom::element *)>> otherFuncs =
+            {{"shader", _Shader}};
+
+        inline std::map<std::string, std::function<void(simdjson::dom::element *, Shader *)>> shaderModifierFuncs =
+            {{"set", Set}, {"setshader", Set}, {"setuniform", Set}};
+    }
 }
 #endif

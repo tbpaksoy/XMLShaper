@@ -11,6 +11,7 @@ namespace parseShape
     {
         Mesh *mesh = new Mesh(resolution * 2, vertexSize);
         float sectorStep = 4 * (22.0f / 7.0f) / resolution / 2;
+        int toothStep = resolution / toothCount;
         for (int i = 0; i < resolution; i++)
         {
             float angle = sectorStep * i;
@@ -24,29 +25,32 @@ namespace parseShape
         }
         mesh->AddIndices(resolution - 1, resolution * 2 - 1, 0);
         mesh->AddIndices(0, resolution * 2 - 1, resolution);
-        for (unsigned int i = 0, j = 0; i < toothCount; i++, j += resolution / toothCount)
+        for (unsigned int i = 0; i < resolution; i += toothStep * 2)
         {
-            mesh->AddVertex({std::cos(sectorStep * j) * toothHeight,
-                             std::sin(sectorStep * j) * toothHeight,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0});
-            mesh->AddVertex({std::cos(sectorStep * (j + 1)) * toothHeight,
-                             std::sin(sectorStep * (j + 1)) * toothHeight,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0,
-                             0});
-            unsigned int index = mesh->GetVertexCount() - 2;
-            mesh->AddIndices({j + resolution, j + resolution + 1, index});
-            mesh->AddIndices({index + 1, j + resolution + 1, index});
+            for (unsigned int j = 0; j <= toothStep; j++)
+            {
+                float angle = sectorStep * (i + j + 1);
+                mesh->AddVertex({std::cos(angle) * toothHeight,
+                                 std::sin(angle) * toothHeight,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0});
+                if (j)
+                {
+                    unsigned int index = mesh->GetVertexCount() - 1;
+                    mesh->AddIndices({i + j + resolution, index, i + j + resolution + 1});
+                    mesh->AddIndices({i + j + resolution, index, index - 1});
+                }
+            }
+        }
+        size_t actualSize = mesh->GetVertexSize();
+        for (size_t i = 0; i < actualSize; i++)
+        {
+            mesh->AddVertex({});
         }
         return mesh;
     }

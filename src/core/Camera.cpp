@@ -8,7 +8,7 @@
 namespace parseShape
 {
 #pragma region Constructors and Destructors
-    Camera::Camera()
+    Camera::Camera() : Object()
     {
         fov = 45.0f;
         pNear = 0.1f;

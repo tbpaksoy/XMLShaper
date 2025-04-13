@@ -8,6 +8,8 @@
 #include <vector>
 namespace parseShape
 {
+    // En : Window class
+    // Tr : Pencere sınıfı
     class Window
     {
     private:

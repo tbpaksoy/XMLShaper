@@ -12,6 +12,7 @@ namespace parseShape
         std::map<GLint, GLint> attributes;
         void CheckProgramLinkErrors();
         void CheckShaderCompileErrors(GLuint shader);
+        unsigned int attributeSize;
 
     public:
         Shader(const char *vertexPath, const char *fragmentPath);
@@ -27,6 +28,8 @@ namespace parseShape
         void Set(const char *name, glm::mat2 value);
         void Set(const char *name, glm::mat3 value);
         void Set(const char *name, glm::mat4 value);
+
+        unsigned int GetAttributeSize() const;
     };
 }
 #endif

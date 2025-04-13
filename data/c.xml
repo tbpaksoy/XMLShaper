@@ -1,4 +1,5 @@
 <Scene>
+    <Shader vertex="shaders\\mesh.vs" fragment="shaders\\mesh.fs" />
     <Cam type="p">
         <Translate y="2" z="5" />
     </Cam>

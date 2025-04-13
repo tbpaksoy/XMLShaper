@@ -31,9 +31,25 @@ namespace parseShape
     {
         this->camera = camera;
     }
+    void Scene::UpdateCamera()
+    {
+        if (camera && shader)
+        {
+            camera->SetUniforms(shader);
+        }
+    }
     Camera *Scene::GetCamera() const
     {
         return camera;
+    }
+    void Scene::AddObject(Object *object)
+    {
+        objects.push_back(object);
+        Mesh *mesh = dynamic_cast<Mesh *>(object);
+        if (mesh)
+        {
+            meshes.push_back(mesh);
+        }
     }
     void Scene::AddMesh(Mesh *mesh)
     {
@@ -80,7 +96,7 @@ namespace parseShape
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), _vertices, GL_STATIC_DRAW);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), _indices, GL_STATIC_DRAW);
 
-        if (shader && camera)
+        if (shader != nullptr && camera != nullptr)
         {
             shader->Use();
             camera->SetUniforms(shader);

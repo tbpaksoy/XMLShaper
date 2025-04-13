@@ -69,6 +69,7 @@ namespace parseShape
                     if (line.find(it.first) != std::string::npos)
                     {
                         attributes[loc] = it.second;
+                        attributeSize += it.second;
                     }
                 }
             }
@@ -245,6 +246,11 @@ namespace parseShape
     void Shader::Set(const char *name, glm::mat4 value)
     {
         glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE, &value[0][0]);
+    }
+
+    unsigned int Shader::GetAttributeSize() const
+    {
+        return attributeSize;
     }
 }
 #endif

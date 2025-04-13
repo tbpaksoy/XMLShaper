@@ -20,6 +20,12 @@ namespace parseShape
         this->vertexSize = vertexSize;
         vertices.resize(vertexCount * vertexSize);
     }
+    Mesh::Mesh(int vertexCount, Shader *shader)
+    {
+        this->vertexCount = vertexCount;
+        this->vertexSize = shader->GetAttributeSize();
+        vertices.resize(vertexCount * vertexSize);
+    }
     Mesh::~Mesh()
     {
     }
@@ -145,6 +151,13 @@ namespace parseShape
         DoTransformations(0, vertexCount);
     }
 
+    // En: Returns the vertex at the specified index and offset.
+    // `index` is the index of the vertex.
+    // `offset` is the offset of the vertex.
+    // Tr: Belirtilen indexteki ve offsetteki vertexi döndürür.
+    // `index`, vertexin indeksi.
+    // `offset`, vertexin offseti.
+
     // En: Returns the number of vertices in the mesh.
     // Tr: Meshin içindeki vertex sayısını döndürür.
     int Mesh::GetVertexCount() const
@@ -188,6 +201,27 @@ namespace parseShape
         return &indices.front();
     }
 
+    template <>
+    float Mesh::GetVertex<float>(unsigned int index, unsigned int offset)
+    {
+        return vertices[index * vertexSize + offset];
+    }
+    template <>
+    glm::vec2 Mesh::GetVertex<glm::vec2>(unsigned int index, unsigned int offset)
+    {
+        return glm::vec2(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1]);
+    }
+    template <>
+    glm::vec3 Mesh::GetVertex<glm::vec3>(unsigned int index, unsigned int offset)
+    {
+        return glm::vec3(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1], vertices[index * vertexSize + offset + 2]);
+    }
+    template <>
+    glm::vec4 Mesh::GetVertex<glm::vec4>(unsigned int index, unsigned int offset)
+    {
+        return glm::vec4(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1], vertices[index * vertexSize + offset + 2], vertices[index * vertexSize + offset + 3]);
+    }
+
     Mesh *CreateBox(float width, float height, float depth, int vertexSize)
     {
         Mesh *mesh = new Mesh(8, vertexSize);
@@ -214,6 +248,10 @@ namespace parseShape
 
         return mesh;
     }
+    Mesh *CreateBox(float width, float height, float depth, Shader *shader)
+    {
+        return CreateBox(width, height, depth, shader->GetAttributeSize());
+    }
     Mesh *CreatePlane(float width, float height, int vertexSize)
     {
         Mesh *mesh = new Mesh(4, vertexSize);
@@ -229,6 +267,10 @@ namespace parseShape
         mesh->SetIndices({2, 1, 0, 0, 3, 2});
 
         return mesh;
+    }
+    Mesh *CreatePlane(float width, float height, Shader *shader)
+    {
+        return CreatePlane(width, height, shader->GetAttributeSize());
     }
     Mesh *CreateCylinder(float radius, float height, int sectorCount, int vertexSize)
     {
@@ -261,6 +303,10 @@ namespace parseShape
 
         return mesh;
     }
+    Mesh *CreateCylinder(float radius, float height, int sectorCount, Shader *shader)
+    {
+        return CreateCylinder(radius, height, sectorCount, shader->GetAttributeSize());
+    }
     Mesh *CreateCone(float radius, float height, int sectorCount, int vertexSize)
     {
         Mesh *mesh = new Mesh(sectorCount + 1, vertexSize);
@@ -287,6 +333,10 @@ namespace parseShape
         mesh->SetIndices(indices);
 
         return mesh;
+    }
+    Mesh *CreateCone(float radius, float height, int sectorCount, Shader *shader)
+    {
+        return CreateCone(radius, height, sectorCount, shader->GetAttributeSize());
     }
 }
 #endif
