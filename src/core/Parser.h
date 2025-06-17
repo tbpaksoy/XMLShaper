@@ -31,6 +31,7 @@ namespace parseShape
 
         void Color(tinyxml2::XMLElement *element, Mesh *mesh);
         void Normal(tinyxml2::XMLElement *element, Mesh *mesh);
+        void Set_Mesh(tinyxml2::XMLElement *element, Mesh *mesh);
 
         void Translate(tinyxml2::XMLElement *element, Object *object);
         void Rotate(tinyxml2::XMLElement *element, Object *object);
@@ -40,13 +41,13 @@ namespace parseShape
 
         Shader *_Shader(tinyxml2::XMLElement *element);
 
-        void Set(tinyxml2::XMLElement *element, Shader *shader);
+        void Set_Shader(tinyxml2::XMLElement *element, Shader *shader);
 
         inline std::map<std::string, std::function<Mesh *(tinyxml2::XMLElement *)>> meshFuncs =
             {{"box", Box}, {"plane", Plane}, {"cylinder", Cylinder}, {"cone", Cone}};
 
         inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Mesh *)>> meshModifierFuncs =
-            {{"color", Color}, {"normal", Normal}};
+            {{"color", Color}, {"normal", Normal}, {"set", Set_Mesh}};
 
         inline std::map<std::string, std::function<Object *(tinyxml2::XMLElement *)>> objectFuncs =
             {{"camera", _Camera}, {"cam", _Camera}};
@@ -58,7 +59,7 @@ namespace parseShape
             {{"shader", _Shader}};
 
         inline std::map<std::string, std::function<void(tinyxml2::XMLElement *, Shader *)>> shaderModifierFuncs =
-            {{"set", Set}, {"setshader", Set}, {"setuniform", Set}};
+            {{"set", Set_Shader}, {"setshader", Set_Shader}, {"setuniform", Set_Shader}};
     }
     namespace json
     {

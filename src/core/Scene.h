@@ -52,9 +52,15 @@ namespace parseShape
         // En : Adds an object to the scene.
         // Tr : Sahneye bir nesne ekler.
         void AddObject(Object *object);
+        // En : Returns the objects in the scene.
+        // Tr : Sahnedeki nesneleri döner.
+        std::vector<Object *> GetObjects() const;
         // En : Adds a mesh to the scene.
         // Tr : Sahneye bir mesh ekler.
         void AddMesh(Mesh *mesh);
+        // En : Returns the meshes in the scene.
+        // Tr : Sahnedeki mesh'leri döner.
+        std::vector<Mesh *> GetMeshes() const;
         // En : Sets the vertices and indices for the scene.
         // Tr : Sahne için vertex ve index ayarlar.
         void Update();

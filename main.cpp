@@ -23,7 +23,7 @@ int main()
     window.SetStyle([]()
                     { parseShape::Nuky(); });
     bool playAnimation[5] = {false, false, false, false, false};
-    window.SetUpdate([&]()
+    window.SetUpdate([&](float delta)
                      {
 
         ImGui::Begin("Scene");
@@ -51,12 +51,15 @@ int main()
         {
             if (scene)
                 delete scene;
+            if (shader)
+                delete shader;
             scene = parseShape::Parse(file);
-            if(scene){
-            scene->Update();
-            scene->UpdateCamera();
-            shader = scene->GetShader();
-            shader->Activate();
+            if(scene)
+            {
+                shader = scene->GetShader();
+                scene->Update();
+                shader->Activate();
+                scene->UpdateCamera();
             }
         }
 
@@ -66,11 +69,12 @@ int main()
         }
         playAnimation[1] = file && !ImGui::IsItemHovered() && !ImGui::IsItemFocused();
 
-        if(shader){
-        if(ImGui::SliderFloat("Brightness", &brightness, 0.0f, 3.0f))
-            shader->Set("brightness", brightness);
-        if(ImGui::SliderFloat("Ambient", &ambientStrength, 0.0f, 1.0f))
-            shader->Set("ambientStrength", ambientStrength);
+        if(shader)
+        {
+            if(ImGui::SliderFloat("Brightness", &brightness, 0.0f, 3.0f))
+                shader->Set("brightness", brightness);
+            if(ImGui::SliderFloat("Ambient", &ambientStrength, 0.0f, 1.0f))
+                shader->Set("ambientStrength", ambientStrength);
         }
 
 

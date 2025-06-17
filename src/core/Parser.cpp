@@ -8,11 +8,13 @@
 #include <fstream>
 #include <algorithm>
 #include <string>
+#include <sstream>
 #include <iostream>
 
 namespace parseShape
 {
     static simdjson::dom::parser parser;
+    static Shader *globalShader = nullptr;
     Scene *Parse(std::string path)
     {
         if (path.empty())
@@ -36,6 +38,7 @@ namespace parseShape
             tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
             doc->Parse(content.c_str());
             scene = xml::Parse(doc);
+            delete doc;
         }
         else if (ext == "json")
         {
@@ -464,6 +467,8 @@ namespace parseShape
                     if (std::holds_alternative<Shader *>(ot))
                     {
                         Shader *shader = std::get<Shader *>(ot);
+                        if (!globalShader)
+                            globalShader = shader;
                         scene->SetShader(shader);
                         for (tinyxml2::XMLElement *o = e->FirstChildElement(); o; o = o->NextSiblingElement())
                         {
@@ -477,6 +482,8 @@ namespace parseShape
                     }
                 }
             }
+
+            globalShader = nullptr;
 
             return scene;
         }
@@ -505,7 +512,10 @@ namespace parseShape
             else if (element->Attribute("height"))
                 height = element->FloatAttribute("height");
 
-            return CreateBox(width, depth, height, 9);
+            if (globalShader)
+                return CreateBox(width, depth, height, globalShader);
+            else
+                return CreateBox(width, depth, height, 9);
         }
         Mesh *Plane(tinyxml2::XMLElement *element)
         {
@@ -519,7 +529,10 @@ namespace parseShape
             else if (element->Attribute("height"))
                 height = element->FloatAttribute("height");
 
-            return CreatePlane(width, height, 9);
+            if (globalShader)
+                return CreatePlane(width, height, globalShader);
+            else
+                return CreatePlane(width, height, 9);
         }
         Mesh *Cylinder(tinyxml2::XMLElement *element)
         {
@@ -545,7 +558,10 @@ namespace parseShape
             else if (element->Attribute("n"))
                 sectorCount = element->IntAttribute("n");
 
-            return CreateCylinder(radius, height, sectorCount, 9);
+            if (globalShader)
+                return CreateCylinder(radius, height, sectorCount, globalShader);
+            else
+                return CreateCylinder(radius, height, sectorCount, 9);
         }
         Mesh *Cone(tinyxml2::XMLElement *element)
         {
@@ -564,7 +580,10 @@ namespace parseShape
             else if (element->Attribute("resolution"))
                 sectorCount = element->IntAttribute("resolution");
 
-            return CreateCone(radius, height, sectorCount, 9);
+            if (globalShader)
+                return CreateCone(radius, height, sectorCount, globalShader);
+            else
+                return CreateCone(radius, height, sectorCount, 9);
         }
 
         void Color(tinyxml2::XMLElement *element, Mesh *mesh)
@@ -612,6 +631,48 @@ namespace parseShape
             {
                 mesh->ChangeVertex(glm::vec3(x, y, z), i, 3);
             }
+        }
+        void Set_Mesh(tinyxml2::XMLElement *element, Mesh *mesh)
+        {
+            if (!mesh)
+                return;
+            const char *name = element->Attribute("name"), *type = element->Attribute("type");
+            if (!name || !type)
+                return;
+            std::function<void(int)> func = nullptr;
+            switch (attributeTable[std::string(type)])
+            {
+            case FLOAT:
+            {
+                float fValue = element->FloatAttribute("value");
+                func = [mesh, name, fValue](int i)
+                { mesh->ChangeVertex(i, fValue, name); };
+                break;
+            }
+            case INT:
+            {
+                int iValue = element->IntAttribute("value");
+                func = [mesh, name, iValue](int i)
+                { mesh->ChangeVertex(i, iValue, name); };
+                break;
+            }
+            case VEC2:
+            {
+                glm::vec2 v2Value(element->FloatAttribute("x"), element->FloatAttribute("y"));
+                func = [mesh, name, v2Value](int i)
+                { mesh->ChangeVertex(i, v2Value, name); };
+                break;
+            }
+            case VEC3:
+            {
+                glm::vec3 v3Value(element->FloatAttribute("x"), element->FloatAttribute("y"), element->FloatAttribute("z"));
+                func = [mesh, name, v3Value](int i)
+                { mesh->ChangeVertex(i, v3Value, name); };
+                break;
+            }
+            }
+            for (int i = 0; i < mesh->GetVertexCount(); i++)
+                func(i);
         }
 
         void Translate(tinyxml2::XMLElement *element, Object *object)
@@ -717,7 +778,7 @@ namespace parseShape
             return shader;
         }
 
-        void Set(tinyxml2::XMLElement *element, Shader *shader)
+        void Set_Shader(tinyxml2::XMLElement *element, Shader *shader)
         {
             const char *name = element->Attribute("name"), *value = element->Attribute("value");
             if (!shader || !name || !value)

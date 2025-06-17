@@ -38,6 +38,7 @@ namespace parseShape
         glm::mat4 GetOrthographicMatrix() const;
         glm::mat4 GetProjectionMatrix() const;
         glm::mat4 GetModelMatrix() const;
+
         void SetPerspective(float fov, float aspect, float near, float far);
         void SetOrthographic(float left, float right, float bottom, float top, float near, float far);
         void SetUniforms(Shader *shader, const char *model = "model", const char *view = "view", const char *projection = "projection", CameraType type = CameraType::Perspective);
@@ -53,6 +54,18 @@ namespace parseShape
         void SetNear(float near);
         void SetFar(float far);
         void SetType(CameraType type);
+
+        float GetFOV() const;
+        float GetNearPlane() const;
+        float GetFarPlane() const;
+        float GetAspect() const;
+        float GetLeft() const;
+        float GetRight() const;
+        float GetBottom() const;
+        float GetTop() const;
+        float GetNear() const;
+        float GetFar() const;
+
         CameraType GetType() const;
     };
 }

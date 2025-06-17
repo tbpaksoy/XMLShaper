@@ -1,0 +1,10 @@
+<Scene>
+    <Shader vertex="shaders\\mesh.vs" fragment="shaders\\mesh.fs" />
+    <Cam type="p">
+        <Rotate x="0.1" />
+        <Translate z="2" y="0.25" />
+    </Cam>
+    <Box width="1" height="1" depth="1">
+        <Set name="aColor" x="0.5" y="0.25" z="0.3" type="vec3" />
+    </Box>
+</Scene>

@@ -104,7 +104,7 @@ namespace parseShape
     // Tr : Nesnenin yukarı vektörünü verir.
     glm::vec3 Object::GetUp() const
     {
-        return up;
+        return glm::normalize(rotation * up);
     }
     // En : Gives the front vector of the object.
     // Tr : Nesnenin ön vektörünü verir.

@@ -17,6 +17,8 @@ namespace parseShape
         glDeleteVertexArrays(1, &vao);
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ebo);
+        delete[] _vertices;
+        delete[] _indices;
     }
 
     void Scene::SetShader(Shader *shader)
@@ -51,9 +53,17 @@ namespace parseShape
             meshes.push_back(mesh);
         }
     }
+    std::vector<Object *> Scene::GetObjects() const
+    {
+        return objects;
+    }
     void Scene::AddMesh(Mesh *mesh)
     {
         meshes.push_back(mesh);
+    }
+    std::vector<Mesh *> Scene::GetMeshes() const
+    {
+        return meshes;
     }
 
     void Scene::Update()

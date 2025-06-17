@@ -19,7 +19,7 @@ namespace parseShape
         GLFWwindow *window;
         unsigned int width, height, lastWidth, lastHeight;
         const char *title;
-        std::function<void()> update = []() {};
+        std::function<void(float)> update = [](float delta) {};
         std::function<void()> start = []() {};
         std::function<void(int, int)> onWindowResize = [](int, int) {};
         float deltaTime = 0.0f;
@@ -60,10 +60,11 @@ namespace parseShape
         void SetBackgroundColor(glm::vec3 color);
         void SetBackgroundColor(float r, float g, float b, float a);
         void SetBackgroundColor(float r, float g, float b);
-        void SetUpdate(std::function<void()> update);
+        void SetUpdate(std::function<void(float)> update);
         void SetStart(std::function<void()> start);
         void SetStyle(std::function<void()> style);
         void SetDefaultShaders(std::vector<Shader *> shaders);
+        void BuildFont(const char *fontPath, float fontSize, const char *characters = nullptr);
 
         void SetOnWindowResize(std::function<void(int, int)> onWindowResize);
     };

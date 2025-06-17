@@ -117,7 +117,7 @@ namespace parseShape
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
-            update();
+            update(deltaTime);
 
             ImGui::Render();
 
@@ -210,7 +210,7 @@ namespace parseShape
     //  `update` : Update function.
     //  Tr : Güncelleme fonksiyonunu ayarlar.
     //  `update` : Güncelleme fonksiyonu.
-    void Window::SetUpdate(std::function<void()> update)
+    void Window::SetUpdate(std::function<void(float)> update)
     {
         if (update)
             this->update = update;
@@ -248,6 +248,28 @@ namespace parseShape
     {
         if (onWindowResize)
             this->onWindowResize = onWindowResize;
+    }
+    // En : Sets the font.
+    // `fontPath` : Font path.
+    // `fontSize` : Font size.
+    // `characters` : Characters.
+    // Tr : Fontu ayarlar.
+    // `fontPath` : Font yolu.
+    // `fontSize` : Font boyutu.
+    // `characters` : Karakterler.
+    void Window::BuildFont(const char *fontPath, float fontSize, const char *characters)
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        ImFontGlyphRangesBuilder builder;
+        ImVector<ImWchar> ranges;
+        for (unsigned char p = 1; p < 255; p++)
+            builder.AddChar(p);
+        builder.AddChar(255);
+        if (characters)
+            builder.AddText(characters);
+        builder.BuildRanges(&ranges);
+        io.Fonts->AddFontFromFileTTF(fontPath, fontSize, nullptr, ranges.Data);
+        io.Fonts->Build();
     }
 
     // En : Themes

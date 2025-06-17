@@ -2,6 +2,7 @@ imgui.ini
 .vscode/
 build/
 include/
+fonts/
 *.exe
 *.dll
 test.cpp

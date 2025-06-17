@@ -1,9 +1,12 @@
 #ifndef SHADER_CPP
 #define SHADER_CPP
+
 #include <GL/glew.h>
 #include "Shader.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
+
 namespace parseShape
 {
     static std::map<std::string, GLint> attributesSizes =
@@ -51,36 +54,115 @@ namespace parseShape
         std::string vertexCode, fragmentCode;
         std::ifstream vertexFile, fragmentFile;
 
+        // Vertex shader
+
+        while (vertexCode.find("  ") != std::string::npos)
+            vertexCode.replace(vertexCode.find("  "), 2, " ");
+
         vertexFile.open(vertexPath);
         for (std::string line; std::getline(vertexFile, line);)
-        {
             vertexCode += line + '\n';
-            if (line.find("layout") != std::string::npos)
+
+        std::stringstream ss(vertexCode);
+        for (std::string line; std::getline(ss, line);)
+        {
+            if (line.find("uniform") != std::string::npos)
             {
-                int begin = line.find("=") + 1, end = line.find(")");
-                std::string attribute = line.substr(begin, end - begin);
-                while (attribute.find(" ") != std::string::npos)
-                {
-                    attribute.erase(attribute.find(" "), 1);
-                }
-                GLint loc = std::stoi(attribute);
-                for (auto it : attributesSizes)
+                std::string type;
+                for (auto &it : attributeTable)
                 {
                     if (line.find(it.first) != std::string::npos)
                     {
-                        attributes[loc] = it.second;
-                        attributeSize += it.second;
+                        type = it.first;
+                        break;
                     }
+                }
+
+                std::string name = line.substr(line.find(type) + type.length() + 1, line.find(";") - line.find(type) - type.length() - 1);
+                uniforms.insert({name, glGetUniformLocation(program, name.c_str())});
+            }
+            else if (line.find("in ") != std::string::npos &&
+                     (line.find(")in") != std::string::npos || line.find(" in") != std::string::npos) &&
+                     line.find("layout") != std::string::npos)
+            {
+                std::string type;
+                AttributeType attributeType;
+                for (auto &it : attributeTable)
+                {
+                    if (line.find(it.first) != std::string::npos)
+                    {
+                        attributeType = it.second;
+                        type = it.first;
+                        switch (it.second)
+                        {
+                        case FLOAT:
+                            attributeSize += 1;
+                            break;
+                        case INT:
+                            attributeSize += 1;
+                            break;
+                        case VEC2:
+                            attributeSize += 2;
+                            break;
+                        case VEC3:
+                            attributeSize += 3;
+                            break;
+                        case VEC4:
+                            attributeSize += 4;
+                            break;
+                        case MAT2:
+                            attributeSize += 4;
+                            break;
+                        case MAT3:
+                            attributeSize += 9;
+                            break;
+                        case MAT4:
+                            attributeSize += 16;
+                            break;
+                        case SAMPLER2D:
+                            attributeSize += 1;
+                            break;
+                        }
+                        break;
+                    }
+                }
+                int first = line.find(type) + type.length() + 1,
+                    last = line.find(";");
+                std::string name = line.substr(first, last - first);
+                size_t start = line.find("layout") + 7;
+                std::string t;
+                bool began = false;
+                for (int i = start; i < line.size(); i++)
+                {
+                    if (!began && std::isdigit(line[i]))
+                    {
+                        t += line[i];
+                        began = true;
+                    }
+                    else if (began && std::isdigit(line[i]))
+                        t += line[i];
+                    else if (began && !std::isdigit(line[i]))
+                        break;
+                }
+                if (began)
+                {
+                    int value = std::stoi(t.c_str());
+                    attributes.push_back(value);
+                    attributeLocations[name] = value;
+                    attributeTypes[name] = attributeType;
+                    attributeNames[value] = name;
                 }
             }
         }
+
         vertexFile.close();
+
+        // Fragment shader
 
         fragmentFile.open(fragmentPath);
         for (std::string line; std::getline(fragmentFile, line);)
-        {
             fragmentCode += line + '\n';
-        }
+
         fragmentFile.close();
 
         const char *vertexSource = vertexCode.c_str();
@@ -115,6 +197,10 @@ namespace parseShape
     Shader::~Shader()
     {
         glDeleteProgram(program);
+        for (auto it : attributeLocations)
+        {
+            glDisableVertexAttribArray(it.second);
+        }
     }
 
     // En: Activates the shader
@@ -122,31 +208,44 @@ namespace parseShape
     void Shader::Activate()
     {
         glUseProgram(program);
-        unsigned int offset = 0, stride = 0;
-        int max = 0;
-        for (auto it : attributes)
+        unsigned int offset = 0;
+        for (int location : attributes)
         {
-            stride += it.second;
-            max = std::max(max, it.first);
-        }
-        for (int i = 0; i <= max; i++)
-        {
-            if (attributes.find(i) != attributes.end())
+            int size;
+            switch (attributeTypes[attributeNames[location]])
             {
-                glEnableVertexAttribArray(i);
-                GLenum error = glGetError();
-                if (error != GL_NO_ERROR)
-                {
-                    std::cerr << "Error: " << error << std::endl;
-                }
-                glVertexAttribPointer(i, attributes[i], GL_FLOAT, GL_FALSE, stride * sizeof(float), (void *)(offset * sizeof(float)));
-                error = glGetError();
-                if (error != GL_NO_ERROR)
-                {
-                    std::cerr << "Error: " << error << std::endl;
-                }
-                offset += attributes[i];
+            case FLOAT:
+                size = 1;
+                break;
+            case INT:
+                size = 1;
+                break;
+            case VEC2:
+                size = 2;
+                break;
+            case VEC3:
+                size = 3;
+                break;
+            case VEC4:
+                size = 4;
+                break;
+            case MAT2:
+                size = 4;
+                break;
+            case MAT3:
+                size = 9;
+                break;
+            case MAT4:
+                size = 16;
+                break;
+            case SAMPLER2D:
+                size = 1;
+                break;
             }
+            glEnableVertexAttribArray(location);
+            glVertexAttribPointer(location, size, GL_FLOAT, GL_FALSE, attributeSize * sizeof(float), (void *)(offset * sizeof(float)));
+            attributeOffsets[attributeNames[location]] = offset;
+            offset += size;
         }
     }
 
@@ -248,9 +347,94 @@ namespace parseShape
         glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_FALSE, &value[0][0]);
     }
 
+    template <typename T>
+    T Shader::Get(const char *name)
+    {
+        return T();
+    }
+    template <>
+    float Shader::Get<float>(const char *name)
+    {
+        float value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value);
+        return value;
+    }
+    template <>
+    int Shader::Get<int>(const char *name)
+    {
+        int value;
+        glGetUniformiv(program, glGetUniformLocation(program, name), &value);
+        return value;
+    }
+    template <>
+    bool Shader::Get<bool>(const char *name)
+    {
+        int value;
+        glGetUniformiv(program, glGetUniformLocation(program, name), &value);
+        return value != 0;
+    }
+    template <>
+    glm::vec2 Shader::Get<glm::vec2>(const char *name)
+    {
+        glm::vec2 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0]);
+        return value;
+    }
+    template <>
+    glm::vec3 Shader::Get<glm::vec3>(const char *name)
+    {
+        glm::vec3 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0]);
+        return value;
+    }
+    template <>
+    glm::vec4 Shader::Get<glm::vec4>(const char *name)
+    {
+        glm::vec4 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0]);
+        return value;
+    }
+    template <>
+    glm::mat2 Shader::Get<glm::mat2>(const char *name)
+    {
+        glm::mat2 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0][0]);
+        return value;
+    }
+    template <>
+    glm::mat3 Shader::Get<glm::mat3>(const char *name)
+    {
+        glm::mat3 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0][0]);
+        return value;
+    }
+    template <>
+    glm::mat4 Shader::Get<glm::mat4>(const char *name)
+    {
+        glm::mat4 value;
+        glGetUniformfv(program, glGetUniformLocation(program, name), &value[0][0]);
+        return value;
+    }
+
     unsigned int Shader::GetAttributeSize() const
     {
         return attributeSize;
+    }
+    Uniforms Shader::GetUniforms() const
+    {
+        return uniforms;
+    }
+    AttributeLocation Shader::GetAttributeLocations() const
+    {
+        return attributeLocations;
+    }
+    AttributeTypeName Shader::GetAttributeTypes() const
+    {
+        return attributeTypes;
+    }
+    AttributeOffset Shader::GetAttributeOffsets() const
+    {
+        return attributeOffsets;
     }
 }
 #endif

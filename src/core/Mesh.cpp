@@ -4,6 +4,7 @@
 #include <math.h>
 #include <GL/glew.h>
 #include <iostream>
+#include <numeric>
 
 #include "Mesh.h"
 
@@ -25,11 +26,28 @@ namespace parseShape
         this->vertexCount = vertexCount;
         this->vertexSize = shader->GetAttributeSize();
         vertices.resize(vertexCount * vertexSize);
+        for (auto &it : shader->GetAttributeTypes())
+            attributeTypes.insert({it.first, it.second});
+        for (auto &it : shader->GetAttributeLocations())
+            attributeLocations.insert({it.first, it.second});
+        for (auto &it : shader->GetAttributeOffsets())
+            attributeOffsets.insert({it.first, it.second});
     }
     Mesh::~Mesh()
     {
     }
 
+    void Mesh::Adapt(Shader *shader)
+    {
+        if (!shader || shader->GetAttributeSize() != vertexSize)
+            return;
+        for (auto &it : shader->GetAttributeTypes())
+            attributeTypes.insert({it.first, it.second});
+        for (auto &it : shader->GetAttributeLocations())
+            attributeLocations.insert({it.first, it.second});
+        for (auto &it : shader->GetAttributeOffsets())
+            attributeOffsets.insert({it.first, it.second});
+    }
     // En: Adds a vertex to the mesh.
     // `vertex` is a vector of floats.
     // Tr: Mesh'e bir vertex ekler.
@@ -121,6 +139,34 @@ namespace parseShape
     {
         vertices[index * vertexSize + offset] = value;
     }
+    void Mesh::ChangeVertex(unsigned int index, float value, const char *name)
+    {
+        if (name && attributeTypes.find(std::string(name)) == attributeTypes.end() && attributeTypes[std::string(name)] != FLOAT)
+            return;
+        int location = attributeLocations.find(std::string(name)) == attributeLocations.end() ? -1 : attributeLocations[std::string(name)];
+        if (location < 0 || location >= vertexSize)
+            return;
+        ChangeVertex(value, index, location + attributeOffsets[std::string(name)]);
+    }
+    void Mesh::ChangeVertex(unsigned int index, glm::vec2 value, const char *name)
+    {
+        if (name && attributeTypes.find(std::string(name)) == attributeTypes.end() && attributeTypes[std::string(name)] != VEC2)
+            return;
+        int location = attributeLocations.find(std::string(name)) == attributeLocations.end() ? -1 : attributeLocations[std::string(name)];
+        if (location < 0 || location >= vertexSize)
+            return;
+        ChangeVertex(value, index, location + attributeOffsets[std::string(name)]);
+    }
+    void Mesh::ChangeVertex(unsigned int index, glm::vec3 value, const char *name)
+    {
+        if (name && attributeTypes.find(std::string(name)) == attributeTypes.end() && attributeTypes[std::string(name)] != VEC3)
+            return;
+        auto it = attributeLocations.find(name);
+        int location = (it == attributeLocations.end()) ? -1 : it->second;
+        if (location < 0 || location >= vertexSize)
+            return;
+        ChangeVertex(value, index, attributeOffsets[std::string(name)]);
+    }
     // En: Sets the indices of the triangles of the mesh.
     // `indices` is a vector of unsigned integers.
     // Tr: Meshin üçgenlerinin indislerini ayarlar.
@@ -171,6 +217,12 @@ namespace parseShape
         return vertexSize;
     }
     // En: Returns the vertices of the mesh.
+    // Tr: Meshin vertexlerini döndürür.
+    std::vector<float> Mesh::GetVertices() const
+    {
+        return vertices;
+    }
+    // En: Returns the vertices of the mesh.
     // `size` is the size of the vertices.
     // Tr: Meshin vertexlerini döndürür.
     // `size`, vertexlerin boyutudur.
@@ -179,16 +231,24 @@ namespace parseShape
         size = vertices.size();
         float *data = new float[size];
         std::copy(vertices.begin(), vertices.end(), data);
+
+        glm::vec3 center = std::accumulate(vertices.begin(), vertices.end(), glm::vec3(0.0f)) / (float)vertexCount;
+
+        glm::mat4 transform = glm::translate(glm::mat4(1.0f), center) *
+                              glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
+                              glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
+                              glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
+                              glm::scale(glm::mat4(1.0f), scale);
+
         for (int i = 0; i < vertexCount; i++)
         {
-            glm::vec3 vertex(data[i * vertexSize], data[i * vertexSize + 1], data[i * vertexSize + 2]);
-            vertex = glm::translate(glm::mat4(1.0f), position) * glm::vec4(vertex, 1.0f);
-            vertex = rotation * vertex;
-            vertex = glm::scale(glm::mat4(1.0f), scale) * glm::vec4(vertex, 1.0f);
+            glm::vec3 vertex(vertices[i * vertexSize], vertices[i * vertexSize + 1], vertices[i * vertexSize + 2]);
+            vertex -= center;
+            vertex = transform * glm::vec4(vertex, 1.0f);
             data[i * vertexSize] = vertex.x;
             data[i * vertexSize + 1] = vertex.y;
             data[i * vertexSize + 2] = vertex.z;
-        };
+        }
         return data;
     }
     // En: Returns the indices of the mesh.
@@ -202,22 +262,22 @@ namespace parseShape
     }
 
     template <>
-    float Mesh::GetVertex<float>(unsigned int index, unsigned int offset)
+    float Mesh::GetVertex<float>(unsigned int index, unsigned int offset) const
     {
         return vertices[index * vertexSize + offset];
     }
     template <>
-    glm::vec2 Mesh::GetVertex<glm::vec2>(unsigned int index, unsigned int offset)
+    glm::vec2 Mesh::GetVertex<glm::vec2>(unsigned int index, unsigned int offset) const
     {
         return glm::vec2(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1]);
     }
     template <>
-    glm::vec3 Mesh::GetVertex<glm::vec3>(unsigned int index, unsigned int offset)
+    glm::vec3 Mesh::GetVertex<glm::vec3>(unsigned int index, unsigned int offset) const
     {
         return glm::vec3(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1], vertices[index * vertexSize + offset + 2]);
     }
     template <>
-    glm::vec4 Mesh::GetVertex<glm::vec4>(unsigned int index, unsigned int offset)
+    glm::vec4 Mesh::GetVertex<glm::vec4>(unsigned int index, unsigned int offset) const
     {
         return glm::vec4(vertices[index * vertexSize + offset], vertices[index * vertexSize + offset + 1], vertices[index * vertexSize + offset + 2], vertices[index * vertexSize + offset + 3]);
     }
@@ -250,7 +310,9 @@ namespace parseShape
     }
     Mesh *CreateBox(float width, float height, float depth, Shader *shader)
     {
-        return CreateBox(width, height, depth, shader->GetAttributeSize());
+        Mesh *mesh = CreateBox(width, height, depth, shader->GetAttributeSize());
+        mesh->Adapt(shader);
+        return mesh;
     }
     Mesh *CreatePlane(float width, float height, int vertexSize)
     {
@@ -270,7 +332,9 @@ namespace parseShape
     }
     Mesh *CreatePlane(float width, float height, Shader *shader)
     {
-        return CreatePlane(width, height, shader->GetAttributeSize());
+        Mesh *mesh = CreatePlane(width, height, shader->GetAttributeSize());
+        mesh->Adapt(shader);
+        return mesh;
     }
     Mesh *CreateCylinder(float radius, float height, int sectorCount, int vertexSize)
     {
@@ -305,7 +369,9 @@ namespace parseShape
     }
     Mesh *CreateCylinder(float radius, float height, int sectorCount, Shader *shader)
     {
-        return CreateCylinder(radius, height, sectorCount, shader->GetAttributeSize());
+        Mesh *mesh = CreateCylinder(radius, height, sectorCount, shader->GetAttributeSize());
+        mesh->Adapt(shader);
+        return mesh;
     }
     Mesh *CreateCone(float radius, float height, int sectorCount, int vertexSize)
     {
@@ -336,7 +402,9 @@ namespace parseShape
     }
     Mesh *CreateCone(float radius, float height, int sectorCount, Shader *shader)
     {
-        return CreateCone(radius, height, sectorCount, shader->GetAttributeSize());
+        Mesh *mesh = CreateCone(radius, height, sectorCount, shader->GetAttributeSize());
+        mesh->Adapt(shader);
+        return mesh;
     }
 }
 #endif

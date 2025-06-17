@@ -232,6 +232,66 @@ namespace parseShape
     {
         this->type = type;
     }
+    // En : Returns the field of view.
+    // Tr : Görüş alanını döndürür.
+    float Camera::GetFOV() const
+    {
+        return fov;
+    }
+    // En : Returns the near plane.
+    // Tr : Yakın düzlemi döndürür.
+    float Camera::GetNearPlane() const
+    {
+        return pNear;
+    }
+    // En : Returns the far plane.
+    // Tr : Uzak düzlemi döndürür.
+    float Camera::GetFarPlane() const
+    {
+        return pFar;
+    }
+    // En : Returns the aspect ratio.
+    // Tr : Ekran oranını döndürür.
+    float Camera::GetAspect() const
+    {
+        return aspect;
+    }
+    // En : Returns the left plane.
+    // Tr : Sol düzlemi döndürür.
+    float Camera::GetLeft() const
+    {
+        return left;
+    }
+    // En : Returns the right plane.
+    // Tr : Sağ düzlemi döndürür.
+    float Camera::GetRight() const
+    {
+        return right;
+    }
+    // En : Returns the bottom plane.
+    // Tr : Alt düzlemi döndürür.
+    float Camera::GetBottom() const
+    {
+        return bottom;
+    }
+    // En : Returns the top plane.
+    // Tr : Üst düzlemi döndürür.
+    float Camera::GetTop() const
+    {
+        return top;
+    }
+    // En : Returns the near plane.
+    // Tr : Yakın düzlemi döndürür.
+    float Camera::GetNear() const
+    {
+        return oNear;
+    }
+    // En : Returns the far plane.
+    // Tr : Uzak düzlemi döndürür.
+    float Camera::GetFar() const
+    {
+        return oFar;
+    }
     // En : Return camera type.
     // Tr : Kamera tipini döndürür.
     CameraType Camera::GetType() const

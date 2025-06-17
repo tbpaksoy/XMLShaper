@@ -5,3 +5,5 @@
 #include "core/Scene.h"
 #include "core/Shader.h"
 #include "core/Window.h"
+#include "core/GUI.h"
+#include "core/Vertex.h"

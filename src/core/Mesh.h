@@ -1,7 +1,10 @@
 #ifndef MESH_H
 #define MESH_H
+
 #include "Object.h"
 #include "Shader.h"
+#include "Attribute.h"
+
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
@@ -16,6 +19,9 @@ namespace parseShape
         std::vector<float> vertices;
         std::vector<unsigned int> indices;
         int vertexCount, vertexSize;
+        AttributeTypeName attributeTypes;
+        AttributeLocation attributeLocations;
+        AttributeOffset attributeOffsets;
 
     public:
         Mesh(std::vector<float> vertices = {}, std::vector<unsigned int> indices = {});
@@ -23,6 +29,7 @@ namespace parseShape
         Mesh(int vertexCount, Shader *shader);
         ~Mesh();
 
+        void Adapt(Shader *shader);
         // En: Adds vertices to the mesh.
         // Tr: Mesh'e vertex'ler ekler.
         void AddVertex(std::vector<float> vertex);
@@ -47,6 +54,9 @@ namespace parseShape
         // En : Changes Vertex at index with value
         // Tr : index'teki vertex'i value ile değiştirir
         void ChangeVertex(float value, int index, int offset);
+        void ChangeVertex(unsigned int index, float value, const char *name);
+        void ChangeVertex(unsigned int index, glm::vec2 value, const char *name);
+        void ChangeVertex(unsigned int index, glm::vec3 value, const char *name);
         // En: Sets indices for the mesh.
         // Tr: Mesh için indisleri ayarlar.
         void SetIndices(std::vector<unsigned int> indices);
@@ -56,19 +66,20 @@ namespace parseShape
         // En: Gets the vertex at the specified index and offset.
         // Tr: Belirtilen index ve offset'teki vertex'i alır.
         template <typename T>
-        T GetVertex(unsigned int index, unsigned int offset);
+        T GetVertex(unsigned int index, unsigned int offset) const;
         template <>
-        float GetVertex<float>(unsigned int index, unsigned int offset);
+        float GetVertex<float>(unsigned int index, unsigned int offset) const;
         template <>
-        glm::vec2 GetVertex<glm::vec2>(unsigned int index, unsigned int offset);
+        glm::vec2 GetVertex<glm::vec2>(unsigned int index, unsigned int offset) const;
         template <>
-        glm::vec3 GetVertex<glm::vec3>(unsigned int index, unsigned int offset);
+        glm::vec3 GetVertex<glm::vec3>(unsigned int index, unsigned int offset) const;
         template <>
-        glm::vec4 GetVertex<glm::vec4>(unsigned int index, unsigned int offset);
+        glm::vec4 GetVertex<glm::vec4>(unsigned int index, unsigned int offset) const;
 
         int GetVertexCount() const;
         int GetVertexSize() const;
 
+        std::vector<float> GetVertices() const;
         float *GetVertices(int &size);
         unsigned int *GetIndices(int &size);
     };
