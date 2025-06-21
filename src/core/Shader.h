@@ -9,7 +9,7 @@
 
 namespace parseShape
 {
-    typedef std::map<std::string, GLint> Uniforms;
+    typedef std::map<std::string, AttributeType> Uniforms;
     class Shader
     {
     private:

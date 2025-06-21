@@ -68,18 +68,20 @@ namespace parseShape
         {
             if (line.find("uniform") != std::string::npos)
             {
-                std::string type;
+                AttributeType type;
+                std::string typeName;
                 for (auto &it : attributeTable)
                 {
                     if (line.find(it.first) != std::string::npos)
                     {
-                        type = it.first;
+                        type = it.second;
+                        typeName = it.first;
                         break;
                     }
                 }
 
-                std::string name = line.substr(line.find(type) + type.length() + 1, line.find(";") - line.find(type) - type.length() - 1);
-                uniforms.insert({name, glGetUniformLocation(program, name.c_str())});
+                std::string name = line.substr(line.find(type) + typeName.length() + 1, line.find(";") - line.find(type) - typeName.length() - 1);
+                uniforms.insert({name, type});
             }
             else if (line.find("in ") != std::string::npos &&
                      (line.find(")in") != std::string::npos || line.find(" in") != std::string::npos) &&
@@ -155,6 +157,8 @@ namespace parseShape
             }
         }
 
+        ss.clear();
+
         vertexFile.close();
 
         // Fragment shader
@@ -162,6 +166,32 @@ namespace parseShape
         fragmentFile.open(fragmentPath);
         for (std::string line; std::getline(fragmentFile, line);)
             fragmentCode += line + '\n';
+
+        while (fragmentCode.find("  ") != std::string::npos)
+            fragmentCode.replace(fragmentCode.find("  "), 2, " ");
+
+        ss.str(fragmentCode);
+        for (std::string line; std::getline(ss, line);)
+        {
+            if (line.find("uniform") != std::string::npos)
+            {
+                AttributeType type;
+                std::string typeName;
+                for (auto &it : attributeTable)
+                {
+                    if (line.find(it.first) != std::string::npos)
+                    {
+                        type = it.second;
+                        typeName = it.first;
+                        break;
+                    }
+                }
+
+                int start = line.find(typeName) + typeName.length() + 1, end = line.find(";");
+                std::string name = line.substr(start, end - start);
+                uniforms.insert({name, type});
+            }
+        }
 
         fragmentFile.close();
 

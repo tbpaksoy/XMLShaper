@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 
+#include <tinyxml2.h>
 #include <string>
 
 namespace parseShape
@@ -22,5 +23,6 @@ namespace parseShape
     template <>
     bool GUI<Mesh *>(Mesh *mesh);
 
+    bool ElementEdit(tinyxml2::XMLElement **element, char *text, size_t length = 1024 * 16, bool addApplyButton = true);
 }
 #endif

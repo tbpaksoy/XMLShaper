@@ -51,7 +51,7 @@ namespace parseShape
 
                 switch (uniform.second)
                 {
-                case 1:
+                case FLOAT:
                 {
                     float value = shader->Get<float>(uniform.first.c_str());
                     if (ImGui::DragFloat(uniform.first.c_str(), &value, 0.01f, -100.0f, 100.0f))
@@ -61,7 +61,7 @@ namespace parseShape
                     }
                     break;
                 }
-                case 2:
+                case VEC2:
                 {
                     glm::vec2 value = shader->Get<glm::vec2>(uniform.first.c_str());
                     if (ImGui::DragFloat2(uniform.first.c_str(), &value.x, 0.01f, -100.0f, 100.0f))
@@ -71,7 +71,7 @@ namespace parseShape
                     }
                     break;
                 }
-                case 3:
+                case VEC3:
                 {
                     glm::vec3 value = shader->Get<glm::vec3>(uniform.first.c_str());
                     if (ImGui::DragFloat3(uniform.first.c_str(), &value.x, 0.01f, -100.0f, 100.0f))
@@ -81,7 +81,7 @@ namespace parseShape
                     }
                     break;
                 }
-                case 4:
+                case VEC4:
                 {
                     glm::vec4 value = shader->Get<glm::vec4>(uniform.first.c_str());
                     if (ImGui::DragFloat4(uniform.first.c_str(), &value.x, 0.01f, -100.0f, 100.0f))
@@ -158,6 +158,30 @@ namespace parseShape
                 }
             }
         }
+        return result;
+    }
+
+    bool ElementEdit(tinyxml2::XMLElement **element, char *text, size_t length, bool addApplyButton)
+    {
+        bool result = false;
+        result |= ImGui::InputTextMultiline("XML Element", text, 1024 * 16);
+
+        try
+        {
+            if (addApplyButton && ImGui::Button("Apply"))
+            {
+                tinyxml2::XMLDocument *doc = new tinyxml2::XMLDocument();
+                doc->Parse(text, length);
+                *element = doc->RootElement();
+                result = true;
+            }
+        }
+        catch (const std::exception &e)
+        {
+            ImGui::Text("Error: %s", e.what());
+            return false;
+        }
+
         return result;
     }
 }

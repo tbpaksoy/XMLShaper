@@ -20,6 +20,7 @@ int main()
     float brightness = 0.0f, ambientStrength = 0.0f;
     parseShape::Scene *scene = nullptr;
     parseShape::Shader *shader = nullptr;
+    parseShape::Camera *camera = nullptr;
     window.SetStyle([]()
                     { parseShape::Nuky(); });
     bool playAnimation[5] = {false, false, false, false, false};
@@ -60,6 +61,7 @@ int main()
                 scene->Update();
                 shader->Activate();
                 scene->UpdateCamera();
+                camera = scene->GetCamera();
             }
         }
 
@@ -77,7 +79,8 @@ int main()
                 shader->Set("ambientStrength", ambientStrength);
         }
 
-
+        if(camera && parseShape::GUI<parseShape::Object*>(camera))
+            camera->SetUniforms(shader);
         ImGui::End();
         if (scene)
             scene->Draw(); });
