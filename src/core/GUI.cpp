@@ -51,6 +51,26 @@ namespace parseShape
 
                 switch (uniform.second)
                 {
+                case INT:
+                {
+                    int value = shader->Get<int>(uniform.first.c_str());
+                    if (ImGui::DragInt(uniform.first.c_str(), &value, 1.0f, -100, 100))
+                    {
+                        shader->Set(uniform.first.c_str(), value);
+                        result |= true;
+                    }
+                    break;
+                }
+                case BOOL:
+                {
+                    bool value = shader->Get<bool>(uniform.first.c_str());
+                    if (ImGui::Checkbox(uniform.first.c_str(), &value))
+                    {
+                        shader->Set(uniform.first.c_str(), value);
+                        result |= true;
+                    }
+                    break;
+                }
                 case FLOAT:
                 {
                     float value = shader->Get<float>(uniform.first.c_str());

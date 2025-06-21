@@ -10,6 +10,7 @@ namespace parseShape
 
     enum AttributeType
     {
+        BOOL,
         INT,
         FLOAT,
         VEC2,
@@ -26,6 +27,7 @@ namespace parseShape
     typedef std::map<std::string, unsigned int> AttributeOffset;
 
     inline std::map<std::string, AttributeType> attributeTable = {
+        {"bool", BOOL},
         {"int", INT},
         {"float", FLOAT},
         {"vec2", VEC2},
