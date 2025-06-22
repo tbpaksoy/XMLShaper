@@ -11,6 +11,7 @@ namespace parseShape
 {
     static std::map<std::string, GLint> attributesSizes =
         {
+            {"bool", 1},
             {"float", 1},
             {"int", 1},
             {"bool", 1},

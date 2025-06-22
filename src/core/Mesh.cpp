@@ -234,8 +234,7 @@ namespace parseShape
 
         glm::vec3 center = std::accumulate(vertices.begin(), vertices.end(), glm::vec3(0.0f)) / (float)vertexCount;
 
-        glm::mat4 transform = glm::translate(glm::mat4(1.0f), center) *
-                              glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
+        glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
                               glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
                               glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)) *
                               glm::scale(glm::mat4(1.0f), scale);
@@ -245,6 +244,7 @@ namespace parseShape
             glm::vec3 vertex(vertices[i * vertexSize], vertices[i * vertexSize + 1], vertices[i * vertexSize + 2]);
             vertex -= center;
             vertex = transform * glm::vec4(vertex, 1.0f);
+            vertex += center + position;
             data[i * vertexSize] = vertex.x;
             data[i * vertexSize + 1] = vertex.y;
             data[i * vertexSize + 2] = vertex.z;

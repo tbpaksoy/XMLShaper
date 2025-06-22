@@ -184,7 +184,7 @@ namespace parseShape
     bool ElementEdit(tinyxml2::XMLElement **element, char *text, size_t length, bool addApplyButton)
     {
         bool result = false;
-        result |= ImGui::InputTextMultiline("XML Element", text, 1024 * 16);
+        ImGui::InputTextMultiline("XML Element", text, 1024 * 16);
 
         try
         {

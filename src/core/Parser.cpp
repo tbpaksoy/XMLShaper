@@ -432,7 +432,7 @@ namespace parseShape
                 {
                     Mesh *mesh = meshFuncs[typeName](e);
                     scene->AddMesh(mesh);
-                    for (tinyxml2::XMLElement *o = e->FirstChildElement(); o; o = o->NextSiblingElement())
+                    for (tinyxml2::XMLElement *o = e->FirstChildElement(); o != nullptr; o = o->NextSiblingElement())
                     {
                         std::string objectName(o->Name());
                         std::transform(objectName.begin(), objectName.end(), objectName.begin(), [](unsigned char c)
@@ -588,7 +588,7 @@ namespace parseShape
 
         void Color(tinyxml2::XMLElement *element, Mesh *mesh)
         {
-            if (mesh == nullptr && std::strcmp(element->Name(), "color") != 0)
+            if (mesh == nullptr)
                 return;
 
             float r = 1.0f, g = 1.0f, b = 1.0f;
@@ -614,7 +614,7 @@ namespace parseShape
         }
         void Normal(tinyxml2::XMLElement *element, Mesh *mesh)
         {
-            if (mesh == nullptr && std::strcmp(element->Name(), "normal") != 0)
+            if (mesh == nullptr)
                 return;
 
             float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -677,7 +677,8 @@ namespace parseShape
 
         void Translate(tinyxml2::XMLElement *element, Object *object)
         {
-            if (object == nullptr && std::strcmp(element->Name(), "translate") != 0)
+
+            if (object == nullptr)
                 return;
 
             float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -694,7 +695,7 @@ namespace parseShape
         }
         void Rotate(tinyxml2::XMLElement *element, Object *object)
         {
-            if (object == nullptr && std::strcmp(element->Name(), "rotate") != 0)
+            if (object == nullptr)
                 return;
 
             float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -711,7 +712,7 @@ namespace parseShape
         }
         void Scale(tinyxml2::XMLElement *element, Object *object)
         {
-            if (object == nullptr && std::strcmp(element->Name(), "scale") != 0)
+            if (object == nullptr)
                 return;
 
             float x = 1.0f, y = 1.0f, z = 1.0f;
