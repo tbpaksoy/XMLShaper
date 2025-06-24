@@ -146,7 +146,7 @@ namespace parseShape
         int location = attributeLocations.find(std::string(name)) == attributeLocations.end() ? -1 : attributeLocations[std::string(name)];
         if (location < 0 || location >= vertexSize)
             return;
-        ChangeVertex(value, index, location + attributeOffsets[std::string(name)]);
+        ChangeVertex(value, index, attributeOffsets[std::string(name)]);
     }
     void Mesh::ChangeVertex(unsigned int index, glm::vec2 value, const char *name)
     {
@@ -155,7 +155,7 @@ namespace parseShape
         int location = attributeLocations.find(std::string(name)) == attributeLocations.end() ? -1 : attributeLocations[std::string(name)];
         if (location < 0 || location >= vertexSize)
             return;
-        ChangeVertex(value, index, location + attributeOffsets[std::string(name)]);
+        ChangeVertex(value, index, attributeOffsets[std::string(name)]);
     }
     void Mesh::ChangeVertex(unsigned int index, glm::vec3 value, const char *name)
     {

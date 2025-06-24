@@ -90,6 +90,7 @@ namespace parseShape
             {
                 std::string type;
                 AttributeType attributeType;
+                int offset = attributeSize;
                 for (auto &it : attributeTable)
                 {
                     if (line.find(it.first) != std::string::npos)
@@ -154,6 +155,7 @@ namespace parseShape
                     attributeLocations[name] = value;
                     attributeTypes[name] = attributeType;
                     attributeNames[value] = name;
+                    attributeOffsets[name] = offset;
                 }
             }
         }
